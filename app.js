@@ -33,33 +33,8 @@ const RouteEtages = require("./router/etage");
 const RouteUsers = require("./router/utilisateur");
 const RoutePers = require("./router/permission");
 const RouteGrps = require("./router/groupe");
-<<<<<<< HEAD
-const Routehist =require("./router/history");
-const RouterFile= require("./router/file");
-const dotenv= require("dotenv");
-const path = require('path');
-
-const pdfsPath = path.join(__dirname, 'pdfs'); // Chemin vers le répertoire des fichiers PDF
-app.use('/pdfs', express.static(pdfsPath));
-dotenv.config();
-mongoose
-  .connect(process.env.MONGO_URI, {
-   
-    useUnifiedTopology: true,
-   
-  })
-  .then(() => {
-    console.log("bd connecter!");
-  })
-  .catch(() => {
-    console.log("echec de connexion");
-  });
-app.use(cors());
-app.use(bodyParser.json());
-=======
 const RouteHist = require("./router/history");
 const RouterFile = require("./router/file");
->>>>>>> a35303d3df21e7ef05cc1d9a491015161cad5a10
 
 // Set up routes
 app.use("/api/places/", RoutePlaces);
