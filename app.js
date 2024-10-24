@@ -24,7 +24,29 @@ if (process.env.FIREBASE_DATABASE_URL) {
 } else {
   console.error("FIREBASE_DATABASE_URL n'est pas définie dans le fichier .env.");
 }
+//teste d'ecriture et de lecture dans le base de données
+// const db = admin.database();
 
+// Test de l'écriture
+// db.ref('testConnection').set({
+//   message: "Connection successful"
+// })
+// .then(() => {
+//   console.log("Données écrites avec succès !");
+// })
+// .catch((error) => {
+//   console.error("Erreur lors de l'écriture des données :", error);
+// });
+
+// Test de la lecture
+// db.ref('testConnection').once('value')
+//   .then((snapshot) => {
+//     const data = snapshot.val();
+//     console.log("Données lues :", data);
+//   })
+//   .catch((error) => {
+//     console.error("Erreur lors de la lecture des données :", error);
+//   });
 // Path for serving PDF files
 const pdfsPath = path.join(__dirname, 'pdfs');
 app.use('/pdfs', express.static(pdfsPath));
