@@ -18,6 +18,12 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: process.env.FIREBASE_DATABASE_URL,
 });
+// Vérifier si la connexion est réussie
+if (process.env.FIREBASE_DATABASE_URL) {
+  console.log("URL de la base de données Firebase chargée avec succès.");
+} else {
+  console.error("FIREBASE_DATABASE_URL n'est pas définie dans le fichier .env.");
+}
 
 // Path for serving PDF files
 const pdfsPath = path.join(__dirname, 'pdfs');
