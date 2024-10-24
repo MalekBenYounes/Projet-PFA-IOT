@@ -12,6 +12,7 @@ const Routehist =require("./router/history");
 const RouterFile= require("./router/file");
 const dotenv= require("dotenv");
 const path = require('path');
+
 const pdfsPath = path.join(__dirname, 'pdfs'); // Chemin vers le répertoire des fichiers PDF
 app.use('/pdfs', express.static(pdfsPath));
 dotenv.config();
