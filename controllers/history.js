@@ -1,52 +1,65 @@
-const Hist = require("../models/history");
-const Place = require("../models/place");
+const admin = require("firebase-admin");
+const db = admin.firestore();
 
-exports.gethistbyplace = async (req, res) => {
+exports.getHistByPlace = async (req, res) => {
   const id_place = req.params.id_place;
-  await Hist.find({ id_place: id_place })
-    
-    .then((hist) => {
+  console.log(`Requête pour l'historique avec id_place: ${id_place}`); // Ajoutez un log ici
+  try {
+      const snapshot = await db.collection("Hist").where("id_place", "==", id_place).get();
+      if (snapshot.empty) {
+          console.log("Aucun document trouvé."); // Log si le snapshot est vide
+          return res.status(404).json({ message: "Aucune historique trouvé pour cet emplacement." });
+      }
+
+      const hist = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      console.log(hist); // Log des données récupérées
       return res.status(200).json({ hist });
-    })
-    .catch((error) => {
-      return res.status(400).json({ error });
-    });
+  } catch (error) {
+      console.error(error);
+      return res.status(400).json({ error: error.message });
+  }
 };
 
-exports.gethist = async (req, res) => {
-    
-    await Hist.find()
-      
-      .then((hist) => {
-        return res.status(200).json({ hist });
-      })
-      .catch((error) => {
-        return res.status(400).json({ error });
-      });
-  };
 
-  exports.gethistbydate=async(req,res)=>{
+exports.getHist = async (req, res) => {
+  try {
+      const snapshot = await db.collection("Hist").get();
+      const hist = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      console.log(hist); // Affichez tous les historiques récupérés
+      return res.status(200).json({ hist });
+  } catch (error) {
+      console.error(error);
+      return res.status(400).json({ error: error.message });
+  }
+};
+
+
+exports.getHistByDate = async (req, res) => {
     const id_place = req.params.id_place;
     const dateD = req.params.date;
     const dates = dateD.split(',');
 
-    const dateDebut = new Date(dates[0]); // Convertir la première date en objet de date
+    const dateDebut = new Date(dates[0]);
     dateDebut.setHours(0, 0, 0, 0); // Définir l'heure à 00:00:00
-    
-    const dateFin = new Date(dates[1]); // Convertir la deuxième date en objet de date
+
+    const dateFin = new Date(dates[1]);
     dateFin.setHours(23, 59, 59, 999); // Définir l'heure à 23:59:59.999
-   await Hist.find({
-      id_place: id_place,
-      update_date: {
-        $gte: new Date(dateDebut).toISOString(), // Recherche les dates supérieures ou égales à la date de début
-        $lte: new Date(dateFin).toISOString() // Recherche les dates inférieures ou égales à la date de fin
-      }
-    }) 
-    .then((hist) => {
-      return res.status(200).json({ hist });
-    })
-    .catch((error) => {
-      return res.status(400).json({ error });
-    });
-    
-  }
+
+    try {
+        const snapshot = await db.collection("Hist")
+            .where("id_place", "==", id_place)
+            .where("update_date", ">=", dateDebut)
+            .where("update_date", "<=", dateFin)
+            .get();
+
+        if (snapshot.empty) {
+            return res.status(404).json({ message: "Aucune historique trouvé pour cet emplacement dans cette plage de dates." });
+        }
+
+        const hist = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        return res.status(200).json({ hist });
+    } catch (error) {
+        console.error(error);
+        return res.status(400).json({ error: error.message });
+    }
+};
