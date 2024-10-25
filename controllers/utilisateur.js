@@ -1,65 +1,75 @@
-const Utilisateur = require("../models/utilisateur");
-const bycrypt = require("bcryptjs");
-exports.createUser = async (req, res) => {
-  const teste = Utilisateur.findOne({id:req.body.id})
-//   if (teste) {
-//    return res.status(404).json({ message: "nom" });
-//  }
-//  const testemail = await Utilisateur.findOne({email:req.body.email})
-//   if (testemail) {
-//    return res.status(404).json({ message: "email" });
-//  }
-  const salt = await bycrypt.genSalt(10);
-  req.body.mot_pass = await bycrypt.hash(req.body.mot_pass, salt);
-  const user = new Utilisateur({
-    id: req.body.id,
-    mot_pass: req.body.mot_pass,
-    nom: req.body.nom,
-    prenom: req.body.prenom,
-    email: req.body.email,
-    groupe: req.body.groupe,
-  });
+const db = require('../firebaseConfig');
+const bcrypt = require("bcryptjs");
 
-  await user
-    .save()
-    .then((utilisateur) => {
-      return res.status(201).json({ utilisateur });
-    })
-    .catch((error) => {
-      console.error(err);
-      return res.status(400).json({ error });
-    });
+exports.createUser = async (req, res) => {
+    try {
+        // Vérifie si l'ID ou l'email existent déjà
+        const idExists = await db.collection('Utilisateurs').where("id", "==", req.body.id).get();
+        if (!idExists.empty) {
+            return res.status(400).json({ message: "L'ID est déjà utilisé." });
+        }
+        
+        const emailExists = await db.collection('Utilisateurs').where("email", "==", req.body.email).get();
+        if (!emailExists.empty) {
+            return res.status(400).json({ message: "L'email est déjà utilisé." });
+        }
+
+        // Hashage du mot de passe
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(req.body.mot_pass, salt);
+
+        // Création de l'utilisateur
+        const userRef = db.collection('Utilisateurs').doc();
+        const userData = {
+            id: userRef.id,
+            mot_pass: hashedPassword,
+            nom: req.body.nom,
+            prenom: req.body.prenom,
+            email: req.body.email,
+            groupe: req.body.groupe || null,
+        };
+
+        await userRef.set(userData);
+        res.status(201).json({ message: "Utilisateur créé avec succès", utilisateur: { ...userData, id: userRef.id } });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: error.message });
+    }
 };
+
 exports.getAllUser = async (req, res) => {
-  let foundUser = await Utilisateur.find();
-  res.json(foundUser);
+    try {
+        const snapshot = await db.collection('Utilisateurs').get();
+        const users = [];
+        snapshot.forEach(doc => {
+            users.push({ id: doc.id, ...doc.data() });
+        });
+        res.status(200).json(users);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: error.message });
+    }
 };
 
 exports.deleteById = async (req, res) => {
-  const id = req.params.id;
-  const result = await Utilisateur.deleteOne({ _id: id });
-  res.json(result);
+    const id = req.params.id;
+    try {
+        await db.collection('Utilisateurs').doc(id).delete();
+        res.status(200).json({ message: `Utilisateur avec l'ID ${id} supprimé.` });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: error.message });
+    }
 };
-
-
 
 exports.updateGroupe = async (req, res) => {
-  try {
     const id = req.params.id;
-    await Utilisateur.updateOne(
-      { _id: id },
-      {
-        groupe: req.body.groupe,
-      }
-    );
-    res.json("mise a jour avec succes !");
-  } catch (err) {
-    res.json(err);
-  }
+    try {
+        const userRef = db.collection('Utilisateurs').doc(id);
+        await userRef.update({ groupe: req.body.groupe });
+        res.status(200).json({ message: "Groupe mis à jour avec succès." });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: error.message });
+    }
 };
-
-
-
-
-
-

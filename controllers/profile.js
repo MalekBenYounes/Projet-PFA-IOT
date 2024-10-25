@@ -1,234 +1,173 @@
-const Utilisateur = require("../models/utilisateur");
-const bycrypt = require("bcryptjs");
+const db = require("../firebaseConfig");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 
 exports.login = async (req, res) => {
-  const user = await Utilisateur.findOne({ id: req.body.id });
-  if (!user) {
-    return res
-      .status(400)
-      .json({ message: "identifiant ou mot de passe incorrecte" });
+  try {
+      const snapshot = await db.collection("Utilisateurs").where("email", "==", req.body.email).get();
+      if (snapshot.empty) {
+          return res.status(400).json({ message: "Identifiant ou mot de passe incorrect" });
+      }
+
+      const user = snapshot.docs[0].data();
+      const isPasswordMatch = await bcrypt.compare(req.body.mot_pass, user.mot_pass);
+
+      if (!isPasswordMatch) {
+          return res.status(400).json({ message: "Identifiant ou mot de passe incorrect" });
+      }
+
+      const token = jwt.sign(
+          { id: user.id, groupe: user.groupe },
+          process.env.JWT_SECRET_KEY,
+          { expiresIn: "5d" }
+      );
+
+      res.status(200).json({ user, token });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: error.message });
   }
-
-  const isPasswordMatch = await bycrypt.compare(
-    req.body.mot_pass,
-    user.mot_pass
-  );
-
-  if (!isPasswordMatch) {
-    return res
-      .status(400)
-      .json({ message: "identifiant ou mot de passe incorrecte" });
-  }
-
-  const token = jwt.sign(
-    { _id: user._id, groupe: user.groupe },
-    process.env.JWT_SECRET_KEY,
-    {
-      expiresIn: "5d",
-    }
-  );
-
-  res.status(200).json({ user: user, token: token });
 };
+
+
 exports.updateProfil = async (req, res) => {
-  const token = req.params.token;
+    const token = req.params.token;
 
-  const decode = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    try {
+        const decode = jwt.verify(token, process.env.JWT_SECRET_KEY);
+        const userRef = db.collection("Utilisateurs").doc(decode.id);
+        const userSnapshot = await userRef.get();
 
-  const user = await Utilisateur.findById({ _id: decode._id });
+        if (!userSnapshot.exists) {
+            return res.status(404).json({ message: "Utilisateur non trouvé" });
+        }
 
-  const isPasswordMatch = await bycrypt.compare(req.body.pass, user.mot_pass);
+        const user = userSnapshot.data();
+        const isPasswordMatch = await bcrypt.compare(req.body.pass, user.mot_pass);
 
-  if (!isPasswordMatch) {
-    return res
-      .status(400)
-      .json({ message: " Mot de passe incorrecte" });
-  }
-  if (req.body.user.mot_pass != user.mot_pass) {
-    const salt = await bycrypt.genSalt(10);
-    req.body.user.mot_pass = await bycrypt.hash(req.body.user.mot_pass, salt);
-  }
-  await Utilisateur.updateOne(
-    { _id: decode._id },
-    {
-      mot_pass: req.body.user.mot_pass,
-      nom: req.body.user.nom,
-      prenom: req.body.user.prenom,
-      email: req.body.user.email,
+        if (!isPasswordMatch) {
+            return res.status(400).json({ message: "Mot de passe incorrect" });
+        }
+
+        if (req.body.user.mot_pass !== user.mot_pass) {
+            const salt = await bcrypt.genSalt(10);
+            req.body.user.mot_pass = await bcrypt.hash(req.body.user.mot_pass, salt);
+        }
+
+        await userRef.update({
+            mot_pass: req.body.user.mot_pass,
+            nom: req.body.user.nom,
+            prenom: req.body.user.prenom,
+            email: req.body.user.email,
+        });
+
+        res.status(200).json({ message: "Mise à jour réussie" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: error.message });
     }
-  );
-  res.status(200).json({ message: "mise a jour avec succes !" });
-};
-exports.getprofil = async (req, res) => {
-  const token = req.params.token;
-  const decode = jwt.verify(token, process.env.JWT_SECRET_KEY);
-  const user = await Utilisateur.findById(decode._id);
-  res.json(user);
 };
 
-exports.resetpassword = async (req, res) => {
+exports.getProfil = async (req, res) => {
+  const token = req.params.token;
+
+  try {
+      const decode = jwt.verify(token, process.env.JWT_SECRET_KEY);
+      const userSnapshot = await db.collection("Utilisateurs").doc(decode.id).get();
+
+      if (!userSnapshot.exists) {
+          return res.status(404).json({ message: "Utilisateur non trouvé" });
+      }
+
+      res.json(userSnapshot.data());
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: error.message });
+  }
+};
+
+exports.resetPassword = async (req, res) => {
   const email = req.params.email;
-  const result = await Utilisateur.findOne({ email: email });
-  if (result) {
-    newpassword = generateRandomString(8);
-    const tranporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.MAIL,
-        pass: process.env.PASS,
-      },
-    });
-    const mailOption = {
-      from: process.env.MAIL,
-      to: email,
-      subject: "Réinitialiser Mot de Passe",
-      html: `<head>
-         <style type="text/css">
-         body {
-           margin: 0;
-           padding: 0;
-           -webkit-text-size-adjust: 100%;
-           -ms-text-size-adjust: 100%;
-         }
-     
-         table,
-         td {
-           border-collapse: collapse;
-           
-         }
-     
-        
-     
-       </style>
-     
-       </head>
-      
-     
-     
-     <body>
-       <div style="display:none;font-size:1px;;line-height:1px;max-height:0px;max-width:0px;opacity:0;overflow:hidden;"> Preview - Notification from Coded Mails </div>
-       <div >
-       
-         <div style="margin:0px auto;max-width:600px;">
-           <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="width:100%;">
-             <tbody>
-               <tr>
-                 <td style="direction:ltr;font-size:0px;padding:20px 0;text-align:center;">
-                 
-                
-                  
-                 </td>
-               </tr>
-             </tbody>
-           </table>
-         </div>
-        
-         <div style="background:#54595f;background-color:#54595f;margin:0px auto;border-radius:4px 4px 0 0;max-width:600px;">
-           <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#54595f;background-color:#54595f;width:100%;border-radius:4px 4px 0 0;">
-             <tbody>
-               <tr>
-                 <td style="direction:ltr;font-size:0px;padding:20px 0;text-align:center;">
-              
-                   <div style="margin:0px auto;max-width:600px;">
-                     <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="width:100%;">
-                       <tbody>
-                         <tr>
-                           <td style="direction:ltr;font-size:0px;padding:0px;text-align:center;">
-              
-                             <div class="mj-column-per-100 mj-outlook-group-fix" style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
-                               <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="100%">
-                                 <tbody>
-                                 <tr>
-                                   <td align="center" style="font-size:0px;padding:10px 25px;word-break:break-word;">
-                                     <div style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:24px;font-weight:400;line-height:30px;text-align:center;color:#ffffff;">
-                                       <h1 style="margin: 0; font-size: 24px; line-height: normal; font-weight: 400;">Réinitialisez votre mot de passe</h1>
-                                     </div>
-                                   </td>
-                                 </tr>
-                                 <tr>
-                                   <td align="left" style="font-size:0px;padding:10px 25px;word-break:break-word;">
-                                     <div style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:14px;font-weight:400;line-height:20px;text-align:left;color:#ffffff;">
-                                       <p style="margin: 0; display: block;
-                                       margin: 13px 0;">Salut, ${result.prenom}, Il semble que vous ayez oublié votre mot de passe. Voici votre nouveau mot de passe : ${newpassword}  </p>
-                                     </div>
-                                   </td>
-                                 </tr>
-                                 
-                                     </tbody></table>
-                                   </td>
-                                 </tr>
-                               </tbody></table>
-                             </div>
-                       
-                  
-                           </td>
-                         </tr>
-                       </tbody>
-                     </table>
-                   </div>
-     
-            
-                 </td>
-               </tr>
-             </tbody>
-           </table>
-         </div>
-         
-         
-         
-        
-       </div>
-     
-     
-     </body>`,
-    };
-    const salt = await bycrypt.genSalt(10);
-    newpass = await bycrypt.hash(newpassword, salt);
-    await Utilisateur.updateOne(
-      { _id: result._id },
-      {
-        mot_pass: newpass,
+
+  try {
+      const snapshot = await db.collection("Utilisateurs").where("email", "==", email).get();
+      if (snapshot.empty) {
+          return res.status(404).json({ message: "Utilisateur non trouvé" });
       }
-    );
-    res.json("mise a jour avec succes !");
-    tranporter.sendMail(mailOption, function (error, succes) {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log("email envoyer", succes.response);
-      }
-    });
+
+      const user = snapshot.docs[0];
+      const newPassword = generateRandomString(8);
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+      const transporter = nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+              user: process.env.MAIL,
+              pass: process.env.PASS,
+          },
+      });
+
+      const mailOptions = {
+          from: process.env.MAIL,
+          to: email,
+          subject: "Réinitialisation du mot de passe",
+          html: `<p>Bonjour, ${user.data().prenom},</p>
+                 <p>Voici votre nouveau mot de passe : <b>${newPassword}</b></p>`,
+      };
+
+      await db.collection("Utilisateurs").doc(user.id).update({ mot_pass: hashedPassword });
+      transporter.sendMail(mailOptions, (error, success) => {
+          if (error) {
+              console.error(error);
+          } else {
+              console.log("Email envoyé : ", success.response);
+          }
+      });
+
+      res.status(200).json("Mise à jour réussie !");
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: error.message });
   }
 };
 
 exports.deleteProfil = async (req, res) => {
-  const token = req.params.token;
-  const decode = jwt.verify(token, process.env.JWT_SECRET_KEY);
-  const user = await Utilisateur.findById(decode._id);
+    const token = req.params.token;
 
-  const isPasswordMatch = await bycrypt.compare(req.params.pass, user.mot_pass);
+    try {
+        const decode = jwt.verify(token, process.env.JWT_SECRET_KEY);
+        const userRef = db.collection("Utilisateurs").doc(decode.id);
+        const userSnapshot = await userRef.get();
 
-  if (!isPasswordMatch) {
-    return res
-      .status(400)
-      .json({ message: "mot de passe incorrecte" });
-  }
-  const result = await Utilisateur.deleteOne({ _id: decode._id });
-  res.status(200).json(result);
+        if (!userSnapshot.exists) {
+            return res.status(404).json({ message: "Utilisateur non trouvé" });
+        }
+
+        const user = userSnapshot.data();
+        const isPasswordMatch = await bcrypt.compare(req.params.pass, user.mot_pass);
+
+        if (!isPasswordMatch) {
+            return res.status(400).json({ message: "Mot de passe incorrect" });
+        }
+
+        await userRef.delete();
+        res.status(200).json({ message: "Profil supprimé avec succès" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: error.message });
+    }
 };
 
-//Gener un mot de passe aleatoire
+// Génère un mot de passe aléatoire
 function generateRandomString(length) {
-  let result = "";
-  const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
+    let result = "";
 
-  for (let i = 0; i < length; i++) {
-    const randomIndex = Math.floor(Math.random() * characters.length);
-    result += characters.charAt(randomIndex);
-  }
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
 
-  return result;
+    return result;
 }
