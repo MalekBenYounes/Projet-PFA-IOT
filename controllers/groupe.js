@@ -1,41 +1,87 @@
-const Groupe = require("../models/groupe");
+const admin = require("firebase-admin");
+const db = admin.firestore(); // Assurez-vous d'avoir initialisé Firebase Admin SDK
 
-exports.createGroupe = async(req,res)=>{
-  const teste = await Groupe.findOne({nom:req.body.nom});
-  if (teste) {
-   return res.status(400).json({ message: "Le nom est déja utilisé." });
- }
-    const grp = new Groupe(req.body);
-    await grp
-    .save()
-    .then((groupe) => {
-      return res.status(201).json({ groupe });
-    })
-    .catch((error) => {
-      return res.status(400).json({ error });
-    });
+exports.createGroupe = async (req, res) => {
+    try {
+        // Vérifier si le groupe existe déjà avec le même nom
+        const snapshot = await db.collection("Groupes").where("nom", "==", req.body.nom).get();
+        if (!snapshot.empty) {
+            return res.status(400).json({ message: "Le nom est déjà utilisé." });
+        }
+
+        // Création du nouveau groupe
+        const groupeData = {
+            nom: req.body.nom,
+            permissions: req.body.permissions || [], // Par défaut, tableau vide si non fourni
+        };
+
+        // Ajouter le groupe dans Firestore
+        const groupeRef = await db.collection("Groupes").add(groupeData);
+        const groupe = { id: groupeRef.id, ...groupeData };
+        return res.status(201).json({ groupe });
+    } catch (error) {
+        console.error(error);
+        return res.status(400).json({ error: error.message });
+    }
 };
 
 exports.getAllGroupes = async (req, res) => {
-    let foundGroupe = await Groupe.find().populate("permissions");
-    res.json(foundGroupe);
-  };
+    try {
+        const snapshot = await db.collection("Groupes").get();
+        const groupes = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+        }));
+        return res.status(200).json({ groupes });
+    } catch (error) {
+        console.error(error);
+        return res.status(400).json({ error: error.message });
+    }
+};
 
-  exports.deleteById = async (req, res) => {
+exports.deleteById = async (req, res) => {
     const nom = req.params.nom;
-    const result = await Groupe.deleteOne({ nom: nom });
-    res.json(result);
-  };
 
-exports.updateGrp= async(req,res)=>{
-    try{
+    try {
+        // Trouver le groupe avec le nom donné
+        const snapshot = await db.collection("Groupes").where("nom", "==", nom).get();
+
+        if (snapshot.empty) {
+            return res.status(404).json({ message: "Groupe non trouvé." });
+        }
+
+        // Supprimer le groupe trouvé
+        const batch = db.batch();
+        snapshot.forEach(doc => batch.delete(doc.ref));
+        await batch.commit();
+
+        res.status(200).json({ message: "Groupe supprimé avec succès." });
+    } catch (error) {
+        console.error(error);
+        return res.status(400).json({ error: error.message });
+    }
+};
+
+exports.updateGrp = async (req, res) => {
     const id = req.params.id;
-    await Groupe.updateOne(
-        {_id:id},{
-           
-            permissions: req.body.permissions
+
+    try {
+        // Vérifier l'existence du groupe
+        const groupeRef = db.collection("Groupes").doc(id);
+        const groupeSnapshot = await groupeRef.get();
+
+        if (!groupeSnapshot.exists) {
+            return res.status(404).json({ message: "Groupe non trouvé." });
+        }
+
+        // Mise à jour des permissions du groupe
+        await groupeRef.update({
+            permissions: req.body.permissions || [],
         });
-        res.json("mise a jour avec succes !");
-    }catch (err) {
-        res.json(err);}
+
+        res.status(200).json({ message: "Mise à jour avec succès !" });
+    } catch (error) {
+        console.error(error);
+        res.status(400).json({ error: error.message });
+    }
 };
