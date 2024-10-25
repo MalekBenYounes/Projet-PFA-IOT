@@ -1,61 +1,66 @@
+// controllers/placeController.js
 const Place = require("../models/place");
-const Hist = require("../models/history");
 
-exports.getOnePlace = async (req, res) => {
-  const id = req.params.id;
-  await Place.findOne({ _id: id })
-    .then((place) => {
-      return res.status(200).json({ place });
-    })
-    .catch((error) => {
-      return res.status(400).json({ error });
-    });
+const PlaceController = {
+    create: async (req, res) => {
+        const { num, owner } = req.body;
+        try {
+            const newPlaceId = await Place.create(num, owner);
+            return res.status(201).json({ message: "Place créée avec succès", id: newPlaceId });
+        } catch (error) {
+            return res.status(400).json({ error: error.message });
+        }
+    },
+
+    getOnePlace: async (req, res) => {
+        const id = req.params.id;
+        try {
+            const place = await Place.getOne(id);
+            return res.status(200).json({ place });
+        } catch (error) {
+            return res.status(400).json({ error: error.message });
+        }
+    },
+
+    getAllPlaces: async (req, res) => {
+        try {
+            const places = await Place.getAll();
+            return res.status(200).json({ places });
+        } catch (error) {
+            return res.status(400).json({ error: error.message });
+        }
+    },
+
+    update: async (req, res) => {
+        const id = req.params.id;
+        try {
+            await Place.update(id);
+            res.send("Mise à jour avec succès !");
+        } catch (error) {
+            console.log(error);
+            res.status(400).send(error.message);
+        }
+    },
+
+    delete: async (req, res) => {
+        const owner = req.params.owner;
+        try {
+            await Place.deleteByOwner(owner);
+            res.send(`Places supprimées pour le propriétaire ${owner}.`);
+        } catch (error) {
+            res.status(400).send(error.message);
+        }
+    },
+
+    deleteOnePlace: async (req, res) => {
+        const id = req.params.id;
+        try {
+            await Place.deleteOne(id);
+            res.send(`Place avec l'ID ${id} supprimée.`);
+        } catch (error) {
+            res.status(400).send(error.message);
+        }
+    }
 };
-exports.getAllPlaces = async (req, res) => {
-  await Place.find()
-    .then((places) => {
-      return res.status(200).json({ places });
-    })
-    .catch((error) => {
-      return res.status(400).json({ error });
-    });
-};
 
-exports.update = async (req, res) => {
-  try {
-    const id = req.params.id;
-    const place = await Place.findById(id);
-    place.etat = !place.etat;
-    // Créer un nouvel historique pour la place
-    const now = new Date();
-    const offset = now.getTimezoneOffset() * 60000; // Convertit le décalage en millisecondes
-    
-    
-    const localDate = new Date(now.getTime() - offset);
-    const newHist = new Hist({
-      id_place: place._id,
-      update_date: localDate,
-      last_state: place.etat,
-    });
-    await place.save();
-    await newHist.save();
-
-    res.send("mise a jour avec succes !");
-  } catch (err) {
-    console.log(err);
-    res.send(err);
-  }
-};
-
-exports.delete = async (req, res) => {
-  const owner = req.params.owner;
-  const result = await Place.deleteMany({owner:owner})
-  res.send(result);
-};
-
-exports.deleteOnePlace = async(req,res)=>{
-const id = req.params.id;
-const result =await Place.deleteOne({_id:id})
-res.send(result)
-  
-}
+module.exports = PlaceController;
