@@ -1,0 +1,87 @@
+<h2>Liste des utilisateurs</h2>
+
+<nz-table #nzTable [nzData]="liUsers" >
+  <thead>
+    <tr>
+      <th nzCustomFilter>
+        Nom
+        <nz-filter-trigger
+          [(nzVisible)]="visible"
+          [nzActive]="searchValue.length > 0"
+          [nzDropdownMenu]="menu"
+        >
+          <span nz-icon nzType="search"></span>
+        </nz-filter-trigger>
+      </th>
+      <th>Groupe</th>
+      <th>Addresse email</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let user of liUsers">
+      <td>{{ user.nom }} {{ user.prenom }}
+
+      </td>
+      <td>
+        <ng-container >
+          {{ user.groupe
+          }}<span *ngIf="user.groupe!='Client'"
+            nz-icon
+            class="edit-icon"
+            nzType="edit"
+            nzTheme="outline"
+            (click)="showModal(user)"
+          ></span>
+        </ng-container>
+        <nz-modal [(nzVisible)]="isVisible" nzTitle="Modifier le groupe " (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()">
+          <ng-container *nzModalContent>
+            <span> vous voulez modifier le groupe</span> <br>
+            <nz-select nzShowSearch nzAllowClear [(ngModel)]="selectedValue">
+      <nz-option
+        *ngFor="let groupe of liGroupes"
+        nzLabel="{{ groupe.nom }}"
+        nzValue="{{ groupe.nom }}"
+      ></nz-option>
+    </nz-select>
+
+
+
+          </ng-container>
+        </nz-modal>
+
+      </td>
+      <td>
+        {{ user.email
+        }}<span
+          nz-icon
+          class="del-icon"
+          nzType="delete"
+          nzTheme="outline"
+          (click)="showDeleteConfirm(user)"
+        ></span>
+      </td>
+    </tr>
+  </tbody>
+</nz-table>
+<nz-dropdown-menu #menu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input
+        type="text"
+        nz-input
+        placeholder="Search name"
+        [(ngModel)]="searchValue"
+      />
+      <button
+        nz-button
+        nzSize="small"
+        nzType="primary"
+        (click)="search()"
+        class="search-button"
+      >
+        Search
+      </button>
+      <button nz-button nzSize="small" (click)="reset()">Reset</button>
+    </div>
+  </div>
+</nz-dropdown-menu>

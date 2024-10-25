@@ -1,0 +1,108 @@
+<h2>Paramétre</h2>
+<nz-card nzTitle="Profile">
+  <p>
+    Nom :
+    <input
+      nz-input
+      [(ngModel)]="user.nom"
+      nzSize="default"
+      [disabled]="value"
+    />
+  </p>
+  <p>
+    Prénom :
+    <input
+      nz-input
+      [(ngModel)]="user.prenom"
+      nzSize="default"
+      [disabled]="value"
+    />
+  </p>
+  <p>
+    Mot de passe :
+    <input
+      type="password"
+      nz-input
+      [(ngModel)]="user.mot_pass"
+      nzSize="default"
+      [disabled]="value"
+    />
+  </p>
+  <p>
+    E-mail :
+    <input
+      nz-input
+      [(ngModel)]="user.email"
+      nzSize="default"
+      [disabled]="value"
+    />
+  </p>
+  <div style="text-align: center">
+    <input
+      *ngIf="value"
+      class="bn"
+      type="submit"
+      value="Modifier"
+      (click)="modifier()"
+    />
+
+    <input
+      *ngIf="!value"
+      class="bn"
+      type="submit"
+      value="Confirmer"
+      (click)="confirmer()"
+    />
+    <div *ngIf="user.groupe=='Client'">
+    <input
+    *ngIf="value"
+    class="bn"
+    type="submit"
+    value="Supprimer Compte"
+    (click)="supprimer()"
+  /></div>
+    <nz-modal
+      [(nzVisible)]="isVisibleM"
+      nzTitle="Confirmer votre mot de passe"
+      (nzOnCancel)="handleCancelM()"
+      (nzOnOk)="handleOkM()"
+    >
+      <ng-container *nzModalContent>
+        <input
+          nz-input
+          [(ngModel)]="confirmpass"
+          type="password"
+          nzSize="default"
+        /><br />
+        <span class="errorMsg">{{ message }}</span>
+        <br />
+      </ng-container>
+    </nz-modal>
+    <input
+      *ngIf="!value"
+      class="bn"
+      type="submit"
+      value="Annuler"
+      (click)="annuler()"
+    />
+  </div>
+</nz-card>
+
+
+<nz-modal
+      [(nzVisible)]="isVisibleS"
+      nzTitle="Confirmer votre mot de passe"
+      (nzOnCancel)="handleCancelS()"
+      (nzOnOk)="handleOkS()"
+    >
+      <ng-container *nzModalContent>
+        <input
+          nz-input
+          [(ngModel)]="confirmpass"
+          type="password"
+          nzSize="default"
+        /><br />
+        <span class="errorMsg">{{ message }}</span>
+        <br />
+      </ng-container>
+    </nz-modal>

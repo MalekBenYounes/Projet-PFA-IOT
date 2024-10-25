@@ -1,0 +1,45 @@
+
+h2{
+  margin: 50px;
+  text-align: center;
+  color: #1a3c97;
+}
+nz-table{
+  margin-left: 30px;
+}
+.search-box {
+  padding: 8px;
+}
+
+.search-box input {
+  width: 188px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.search-box button {
+  width: 90px;
+}
+
+.search-button {
+  margin-right: 8px;
+}
+.edit-icon,.del-icon {
+
+  font-size: 15px;
+  margin-left: 10px;
+  display: flex;
+  justify-content: right;
+
+}
+.edit-icon:hover{
+color:rgba(0, 128, 0, 0.436);
+
+}
+.del-icon:hover {
+  color:red;
+}
+nz-select {
+  width: 200px;
+}
+

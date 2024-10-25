@@ -1,0 +1,29 @@
+<img id="profil" src="../../../assets/images/profil.png" />
+    <h2>Bienvenue</h2>
+    <form (ngSubmit)="onSubmit()">
+      <div>
+        <span nz-icon nzType="user" nzTheme="outline"></span>
+        <input
+          type="text"
+          name="username"
+          [(ngModel)]="username"
+          placeholder="Identifiant"
+        />
+      </div> 
+
+      <div>
+        <span nz-icon nzType="lock" nzTheme="outline"></span>
+
+        <input
+          type="password"
+          name="password"
+          [(ngModel)]="pass"
+          placeholder="Mot de passe"
+        />
+      </div>
+      <span class="errorMsg">{{ message }}</span>
+      <div><input class="bn" type="submit" value="Se connecter" /></div>
+      <div class="pass"><a (click)="goToPage('fogpassword')">Mot de passe oublier ?</a>
+      <p>Vous n'avez pas de compte ? <a (click)="goToPage('register')">S'inscrire</a></p>
+    </div>
+    </form>

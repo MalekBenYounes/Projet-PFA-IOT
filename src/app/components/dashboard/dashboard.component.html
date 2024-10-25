@@ -1,0 +1,166 @@
+<nz-layout nz-menu>
+  <nz-header>
+    <ul
+      nz-menu
+      [nzTheme]="theme ? 'dark' : 'light'"
+      nzMode="horizontal"
+      class="header-menu"
+    >
+      <div class="logo"><img src="../../../assets/images/preeparkDash.png" style="width:200px" /></div>
+      <div class="cadre">
+        <nz-avatar nzText="{{ user.prenom[0].toUpperCase() }}"></nz-avatar
+        ><span>{{ user.prenom.toUpperCase() }}</span>
+
+        <nz-switch
+          nzSize="small"
+          [(ngModel)]="theme"
+          style="margin-right: 9px; margin-left: 10px"
+        >
+          <span checked>Dark</span>
+          <span unchecked>Light</span>
+        </nz-switch>
+        <span>Mode Sombre</span>
+
+        <span nz-menu-item class="item-item" (click)="goToPage('parametre')">
+          <span
+            style="margin-right: 15px"
+            nz-icon
+            nzType="setting"
+            nzTheme="outline"
+          ></span
+          >Paramètres
+        </span>
+        <span nz-menu-item (click)="logout()">
+          <span
+            nz-icon
+            nzType="logout"
+            style="margin-right: 15px"
+            nzTheme="outline"
+          ></span
+          >Se déconnecter
+        </span>
+      </div>
+    </ul>
+  </nz-header>
+
+  <nz-layout>
+    <nz-sider
+      nzWidth="200px"
+      [nzTheme]="theme ? 'dark' : 'light'"
+      *ngIf="user.groupe != 'Client'"
+    >
+      <ul nz-menu [nzTheme]="theme ? 'dark' : 'light'" nzMode="inline" >
+        <li
+          nz-submenu
+          nzTitle="Parking"
+          nzIcon="desktop"
+          (click)="goToPage('parking')"
+          *ngIf="hasPermission('etage.read')"
+        >
+          <ul>
+            <li
+              nz-menu-item
+              (click)="showModal()"
+              *ngIf="hasPermission('etage.create')"
+            >
+              <span nz-icon nzType="plus-circle" nzTheme="outline"></span>
+              <span>Ajouter Étage </span>
+              <nz-modal
+                [(nzVisible)]="isVisible"
+                nzTitle="Ajouter un nouvel étage"
+                (nzOnCancel)="handleCancel()"
+                (nzOnOk)="handleOk()"
+                [nzOkLoading]="isOkLoading"
+              >
+                <p *nzModalContent>
+                  Nom Étage :
+                  <input
+                    nz-input
+                    [(ngModel)]="place"
+                    (input)="convertToUpperCase()"
+                    nzSize="default"
+                    style="width: 150px; margin-right: 15px"
+                  /><br>
+                  <span class="errorMsg">{{ message }}</span>
+                  <br>
+                  Nombre de place :
+                  <nz-input-number
+                    [nzMin]="10"
+                    [nzMax]="100"
+                    [nzStep]="1"
+                    [(ngModel)]="np"
+                  ></nz-input-number>
+                </p>
+              </nz-modal>
+            </li>
+          </ul>
+        </li>
+
+        <li
+          nz-menu-item
+          (click)="goToPage('stat')"
+          *ngIf="hasPermission('stat.read')"
+        >
+          <span nz-icon nzType="stock" nzTheme="outline"></span>
+          <span>Statistiques</span>
+        </li>
+        <li
+          nz-menu-item
+          (click)="goToPage('history')"
+          *ngIf="hasPermission('hist.read')"
+        >
+          <span nz-icon nzType="history" nzTheme="outline"></span>
+          <span>Historiques</span>
+        </li>
+        <li nz-submenu nzTitle="Utilisateurs" nzIcon="user" *ngIf="disable('user.read','user.create')">
+          <ul>
+            <li
+              nz-menu-item
+              (click)="goToPage('liuser')"
+              *ngIf="hasPermission('user.read')"
+            >
+              <span>Liste des Utilisateurs</span>
+            </li>
+            <li
+              nz-menu-item
+              (click)="goToPage('adduser')"
+              *ngIf="hasPermission('user.create')"
+            >
+              <span nz-icon nzType="plus-circle" nzTheme="outline"></span>
+              <span>Ajouter utilisateur</span>
+            </li>
+          </ul>
+        </li>
+        <li nz-submenu nzTitle="Groupes" nzIcon="usergroup-add" *ngIf="disable('groupe.read','groupe.create')">
+          <ul>
+            <li
+              nz-menu-item
+              (click)="goToPage('groupe')"
+              *ngIf="hasPermission('groupe.read')"
+            >
+              <span>Liste des Groupe</span>
+            </li>
+            <li
+              nz-menu-item
+              (click)="showModalG()"
+              *ngIf="hasPermission('groupe.create')"
+            >
+              <span nz-icon nzType="plus-circle" nzTheme="outline"></span>
+              <span>Ajouter groupe</span>
+              <app-addgroupe [isVisibleG]="isVisibleG" (newItemEvent)="close($event)"></app-addgroupe>
+            </li>
+          </ul>
+        </li>
+       
+      </ul>
+      <div class ="container">
+        <img src="../../../assets/images/prisma.svg" class="prisma" />
+            </div>
+    </nz-sider>
+    <nz-layout>
+      <nz-content>
+        <router-outlet></router-outlet>
+      </nz-content>
+    </nz-layout>
+  </nz-layout>
+</nz-layout>

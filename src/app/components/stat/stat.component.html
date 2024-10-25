@@ -1,0 +1,11 @@
+<nz-space>
+  <nz-select *nzSpaceItem [(ngModel)]="mode">
+    <nz-option nzValue="week" nzLabel="Week"></nz-option>
+    <nz-option nzValue="month" nzLabel="Month"></nz-option>
+    <nz-option nzValue="year" nzLabel="Year"></nz-option>
+  </nz-select>
+  <nz-range-picker  *nzSpaceItem nzMode="{{mode}}" [(ngModel)]="date" (ngModelChange)="onChange($event)"></nz-range-picker>
+
+</nz-space>
+  <div style="margin-top:100px;" echarts [options]="option" class="demo-chart"></div>
+

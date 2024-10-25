@@ -1,0 +1,46 @@
+
+<h2>Historiques</h2><br>
+<div nz-row>
+  <div nz-col nzSpan="6">
+      <nz-form-item>
+
+        <nz-range-picker [(ngModel)]="date" (ngModelChange)="onChange($event)"></nz-range-picker>
+      </nz-form-item>
+      <nz-form-item>
+
+        <nz-select  nzAllowClear nzPlaceHolder="Etage" name="etage"
+        [(ngModel)]="etage"  (ngModelChange)="onSelectionChange()">
+          <nz-option  *ngFor="let stage of liStages" nzLabel="{{ stage.nom }}" nzValue="{{ stage.nom }}"> </nz-option>
+
+        </nz-select>
+
+      </nz-form-item>
+      <nz-form-item>
+      <nz-select  nzAllowClear nzPlaceHolder="Place" [(ngModel)]="id_place "  (ngModelChange)="onSelectionPlace()">
+        <nz-option  *ngFor="let place of liPlaces" nzLabel="{{ place.num }}" nzValue="{{ place._id}}"></nz-option>
+      </nz-select>
+    </nz-form-item>
+
+    </div>
+    <div nz-col nzSpan="18">
+    <nz-table [nzData]="liHist" nzTableLayout="fixed">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Heure</th>
+          <th>Etat</th>
+
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let hist of liHist">
+          <td>{{hist.date}}</td>
+          <td>{{hist.heure}}</td>
+          <td *ngIf="hist.etat">Libre</td>
+          <td *ngIf="!hist.etat">Ocuppé</td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </div>
+</div>
+

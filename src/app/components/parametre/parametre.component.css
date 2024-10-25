@@ -1,0 +1,29 @@
+h2 {
+  margin: 50px;
+  text-align: center;
+  color: #1a3c97;
+}
+nz-card {
+  margin: 30px;
+  width: 80%;
+}
+input[nz-input] {
+  width: 200px;
+}
+.bn {
+  background-color: #1a3c97;
+  color: white;
+  padding: 10px 30px;
+  margin: 12px;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  text-align: center;
+}
+.bn:hover {
+  background-color: #0670b1;
+}
+.errorMsg {
+  color: rgba(255, 0, 0, 0.63);
+  font-size: 12px;
+}

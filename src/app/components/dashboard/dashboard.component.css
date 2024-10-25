@@ -1,0 +1,77 @@
+.header-menu {
+  line-height: 64px;
+  width:100%;
+}
+
+nz-avatar {
+  margin: 10px;
+
+  background-color: #0670b1;
+}
+
+a {
+  margin-right: 20px;
+}
+.logo {
+
+width: 120px;
+height: 31px;
+margin: 0 30px 16px  ;
+float: left;
+}
+
+
+nz-header {
+  background: #fff;
+  padding: 0;
+}
+
+nz-content {
+
+  padding: 24px;
+  width: 100%;
+  min-height: 91vh;
+}
+
+nz-breadcrumb {
+  margin: 16px 0;
+}
+.ant-layout-content {
+  height: auto;
+}
+
+.cadre {
+  margin-left: 30px;
+  margin-right: 30px;
+  display: flex;
+  justify-content: right;
+  align-items: center;
+
+}
+
+.ant-menu-item {
+  margin: 0;
+}
+
+.item-item {
+  margin-bottom: 0 !important;
+}
+.container {
+  display: flex;
+  align-items: flex-end;
+}
+.prisma{
+
+  width: 100px;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 20px;
+
+}
+
+.errorMsg {
+  color: rgba(255, 0, 0, 0.63);
+  font-size: 12px;
+}

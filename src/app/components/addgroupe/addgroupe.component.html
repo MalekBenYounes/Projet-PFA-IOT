@@ -1,0 +1,30 @@
+
+  <nz-modal
+  [(nzVisible)]="isVisibleG"
+  nzTitle="Ajouter un nouveau groupe"
+  (nzOnCancel)="handleCancelG()"
+  (nzOnOk)="handleOkG()"
+  [nzOkLoading]="isOkLoadingG">
+
+  <div *nzModalContent>
+    Nom groupe : <input nz-input  [(ngModel)]="nom" nzSize="default" style="width: 150px; margin-right: 15px;"/><br>
+    <span class="errorMsg">{{ message }}</span>
+
+
+    <div  style="border-bottom: 1px solid rgb(233, 233, 233);">
+      <label
+      nz-checkbox
+      [(ngModel)]="allChecked"
+      (ngModelChange)="updateAllChecked()"
+      [nzIndeterminate]="indeterminate"
+      >
+      Check all
+    </label>
+  </div>
+  <br />
+  <nz-checkbox-group [(ngModel)]="checkOptionsOne" (ngModelChange)="updateSingleChecked()"></nz-checkbox-group>
+
+</div>
+
+    </nz-modal>
+

@@ -1,0 +1,54 @@
+input[type="text"],
+input[type="password"] {
+  border: none;
+  border-bottom: 2px solid #0670b1;
+  outline: none;
+  background: transparent;
+  resize: vertical;
+  height: 30px;
+  width: 250px;
+  font-size: 15px;
+}
+input {
+  margin-top: 10px;
+  margin-bottom: 30px;
+  margin-left: 8px;
+}
+#profil {
+  height: 60px;
+  width: 60px;
+  align-self: center;
+  display: block;
+  margin: 50px auto 10px auto;
+ 
+}
+h2 {
+  text-align: center;
+  color: #1a3c97;
+}
+.bn{
+  background-color: #1a3c97;
+  color: white;
+  padding: 15px 90px;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+
+}
+.bn:hover {
+  background-color: #0670b1;
+}
+
+form {
+  margin-left: auto;
+  margin-right: auto;
+  width: 40%;
+  font-size: large;
+}
+.errorMsg {
+  color: red;
+  font-size: 14px;
+}
+.pass{
+  font-size: 17px;
+}

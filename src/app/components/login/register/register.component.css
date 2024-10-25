@@ -1,0 +1,24 @@
+[nz-form] {
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+
+
+}
+
+button {
+  margin-left: 8px;
+
+    background-color: #1a3c97;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+
+
+}
+h2 {
+  text-align: center;
+  color: #1a3c97;
+  margin-bottom: 30px;
+}

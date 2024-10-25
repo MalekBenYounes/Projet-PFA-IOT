@@ -1,0 +1,25 @@
+.cadre{
+
+  display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 400px;
+    width: 400px;
+    margin: 10px;
+    border-radius: 5px;
+  }
+  nz-row{
+    align-content: center;
+  }
+  h2 {
+    font-size: 50px;
+    margin: 50px;
+    text-align: center;
+    color: #1a3c97;
+
+  }
+  nz-icon{
+    height: 200px;
+    width: 200px;
+  }
+
