@@ -1,50 +1,55 @@
 const http = require("http");
 const app = require("./app");
 const server = http.createServer(app);
-const socket= require("socket.io");
+const socket = require("socket.io");
 const Place = require("./models/place");
-const Hist = require("./models/history");
+const admin = require("firebase-admin"); // Assurez-vous d'avoir initialisé Firebase Admin
+const db = admin.firestore();
 const io = socket(server, {
   cors: {
-      origin: '*',
+    origin: '*',
   }
 })
 
-
-app.use("/api/places/update/:id",async (req, res) =>  {
-  
+app.use("/api/places/update/:id", async (req, res) => {
   try {
     const id = req.params.id;
-    const place = await Place.findById(id);
+    const place = await Place.findById(id); // Assurez-vous que cela fonctionne avec votre setup
+
+    // Inverser l'état de la place
     place.etat = !place.etat;
+
     // Créer un nouvel historique pour la place
     const now = new Date();
     const offset = now.getTimezoneOffset() * 60000; // Convertit le décalage en millisecondes
-    
-    
     const localDate = new Date(now.getTime() - offset);
-    const newHist = new Hist({
-      id_place: place._id,
+
+    // Créer un nouvel historique dans Firestore
+    const newHist = {
+      id_place: place._id.toString(), // Convertir l'ID en chaîne si nécessaire
       update_date: localDate,
       last_state: place.etat,
-    });
+    };
+
+    // Enregistrer les modifications de la place et l'historique dans Firestore
     await place.save();
-    await newHist.save();
-    res.send("mise a jour avec succes !");
-    io.emit('update', place)
+    await db.collection("Hist").add(newHist); // Ajoutez l'historique à Firestore
+
+    res.send("Mise à jour avec succès !");
+    io.emit('update', place);
   } catch (err) {
     console.log(err);
-    res.send(err);
+    res.status(500).send(err.message); // Retourner une réponse d'erreur appropriée
   }
 });
 
 io.on('connection', (data) => {
-  console.log('someone connected! ',data.id);
-  io.emit('updateplace','')
+  console.log('Someone connected! ', data.id);
+  io.emit('updateplace', '');
 });
-
 
 server.listen(process.env.PORT, () => {
-  console.log("serveur en marche");
+  console.log("Serveur en marche");
 });
+
 module.exports = io;

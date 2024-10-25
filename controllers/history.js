@@ -5,7 +5,7 @@ exports.getHistByPlace = async (req, res) => {
   const id_place = req.params.id_place;
   console.log(`Requête pour l'historique avec id_place: ${id_place}`); // Ajoutez un log ici
   try {
-      const snapshot = await db.collection("Hist").where("id_place", "==", id_place).get();
+      const snapshot = await db.collection("History").where("id_place", "==", id_place).get();
       if (snapshot.empty) {
           console.log("Aucun document trouvé."); // Log si le snapshot est vide
           return res.status(404).json({ message: "Aucune historique trouvé pour cet emplacement." });
@@ -23,7 +23,7 @@ exports.getHistByPlace = async (req, res) => {
 
 exports.getHist = async (req, res) => {
   try {
-      const snapshot = await db.collection("Hist").get();
+      const snapshot = await db.collection("History").get();
       const hist = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       console.log(hist); // Affichez tous les historiques récupérés
       return res.status(200).json({ hist });
@@ -46,7 +46,7 @@ exports.getHistByDate = async (req, res) => {
     dateFin.setHours(23, 59, 59, 999); // Définir l'heure à 23:59:59.999
 
     try {
-        const snapshot = await db.collection("Hist")
+        const snapshot = await db.collection("History")
             .where("id_place", "==", id_place)
             .where("update_date", ">=", dateDebut)
             .where("update_date", "<=", dateFin)

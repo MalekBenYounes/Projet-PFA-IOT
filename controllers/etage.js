@@ -1,7 +1,6 @@
 // controllers/etageController.js
 const admin = require("firebase-admin");
 const Place = require("../models/place");
-const Hist = require("../models/history");
 
 // Fonction pour créer un étage
 exports.createEtage = async (req, res) => {
