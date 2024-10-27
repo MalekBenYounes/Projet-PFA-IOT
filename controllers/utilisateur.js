@@ -3,12 +3,12 @@ const bcrypt = require("bcryptjs");
 
 exports.createUser = async (req, res) => {
     try {
-        // Vérifie si l'ID ou l'email existent déjà
-        const idExists = await db.collection('Utilisateurs').where("id", "==", req.body.id).get();
-        if (!idExists.empty) {
-            return res.status(400).json({ message: "L'ID est déjà utilisé." });
+        // Vérifie que tous les champs nécessaires sont présents
+        if (!req.body.nom || !req.body.prenom || !req.body.email || !req.body.mot_pass) {
+            return res.status(400).json({ message: "Tous les champs sont requis." });
         }
-        
+
+        // Vérifie si l'email existe déjà
         const emailExists = await db.collection('Utilisateurs').where("email", "==", req.body.email).get();
         if (!emailExists.empty) {
             return res.status(400).json({ message: "L'email est déjà utilisé." });
@@ -19,7 +19,7 @@ exports.createUser = async (req, res) => {
         const hashedPassword = await bcrypt.hash(req.body.mot_pass, salt);
 
         // Création de l'utilisateur
-        const userRef = db.collection('Utilisateurs').doc();
+        const userRef = db.collection('Utilisateurs').doc(); // Firestore génère un ID unique
         const userData = {
             id: userRef.id,
             mot_pass: hashedPassword,
@@ -30,12 +30,13 @@ exports.createUser = async (req, res) => {
         };
 
         await userRef.set(userData);
-        res.status(201).json({ message: "Utilisateur créé avec succès", utilisateur: { ...userData, id: userRef.id } });
+        res.status(201).json({ message: "Utilisateur créé avec succès", utilisateur: { ...userData } });
     } catch (error) {
-        console.error(error);
+        console.error("Erreur lors de la création de l'utilisateur:", error);
         res.status(500).json({ error: error.message });
     }
 };
+
 
 exports.getAllUser = async (req, res) => {
     try {

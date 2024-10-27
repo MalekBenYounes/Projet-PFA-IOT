@@ -21,7 +21,9 @@ exports.createEtage = async (req, res) => {
     for (let i = 1; i <= np; i++) {
         const newPlace = {
             num: i,
-            owner: et.nom // Référence à l'étage par son nom
+            etat :true,
+            owner: et.nom 
+            
         };
 
         // Créer un nouvel historique pour la place

@@ -28,16 +28,17 @@ exports.createGroupe = async (req, res) => {
 exports.getAllGroupes = async (req, res) => {
     try {
         const snapshot = await db.collection("Groupes").get();
-        const groupes = snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data(),
-        }));
-        return res.status(200).json({ groupes });
+        const foundGroupes = [];
+        snapshot.forEach(doc => {
+            foundGroupes.push({ id: doc.id, ...doc.data() });
+        });
+        res.status(200).json(foundGroupes);
     } catch (error) {
         console.error(error);
-        return res.status(400).json({ error: error.message });
+        res.status(400).json({ error: error.message });
     }
 };
+
 
 exports.deleteById = async (req, res) => {
     const nom = req.params.nom;
