@@ -23,7 +23,7 @@ export class AddgroupeComponent {
       this.liper.forEach((e) => {
         this.checkOptionsOne.push({
           label: e.nom,
-          value: e._id,
+          value: e.id,
           checked: false,
         });
       });

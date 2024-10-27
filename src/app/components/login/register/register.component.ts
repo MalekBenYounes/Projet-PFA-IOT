@@ -50,7 +50,6 @@ export class RegisterComponent {
  liUsers: User[] = [];
   constructor(private fb: UntypedFormBuilder,private userService: UserService,private router: Router,) {
     this.validateForm = this.fb.group({
-      userName: ['', [Validators.required,this.uniqueName.bind(this)]],
       name: ['', [Validators.required]],
       lastname: ['', [Validators.required]],
       email: ['', [Validators.email, Validators.required,this.uniqueMail.bind(this)]],
@@ -65,20 +64,6 @@ export class RegisterComponent {
       this.liUsers = data;
     });
    }
- uniqueName(control: AbstractControl): ValidationErrors | null {
-    if (this.liUsers) {
-      if (control.value != null) {
-        let user = this.liUsers.find(
-          (e) => e.id.toUpperCase() === control.value.toUpperCase()
-        );
-        if (user !== undefined) {
-          return { nameExist: true };
-        }
-      }
-    }
-    return null;
-  }
-
   uniqueMail(control: AbstractControl): ValidationErrors | null {
     if (this.liUsers) {
       if (control.value != null) {

@@ -11,11 +11,11 @@ export class ConnectComponent {
   constructor(private router: Router, private userService: UserService) {}
   message: string = '';
 
-  username: string = '';
+  email: string = '';
   pass: string = '';
 
   onSubmit(): void {
-    this.userService.login(this.username, this.pass).subscribe(
+    this.userService.login(this.email, this.pass).subscribe(
      { next:(res) => {
         const token = res.token;
         const user=res.user;

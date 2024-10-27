@@ -14,16 +14,16 @@ export class UserService {
   public getuser(): Observable<User[]> {
     return this.http.get<User[]>(`${this.baseUrl}/users/`);
   }
-  public createUser(form: UntypedFormGroup): Observable<User> {
-    const formData = form.value;
+  public createUser(data: any): Observable<User> {
+    console.log('Données envoyées à createUser:', data); // Log des données reçues
     const body = {
-      id: formData.userName,
-      mot_pass: formData.password,
-      nom: formData.name,
-      prenom: formData.lastname,
-      email: formData.email,
-      groupe: formData.groupe,
+      mot_pass: data.password,
+      nom: data.name,
+      prenom: data.lastname,
+      email: data.email,
+      groupe: data.groupe,
     };
+
     return this.http.post<User>(`${this.baseUrl}/users/`, body);
   }
   public deleteUser(id: string): Observable<User> {

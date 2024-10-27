@@ -1,7 +1,6 @@
 export interface File {
-  _id:  string;
+  id:  string;
   nom:  string;
   path: string;
   date: Date;
-  __v:  number;
 }

@@ -56,7 +56,7 @@ export class LiuserComponent {
       nzOkText: 'OUI',
       nzOkType: 'primary',
       nzOkDanger: true,
-      nzOnOk: () =>this.userService.deleteUser(user._id).subscribe(res => {
+      nzOnOk: () =>this.userService.deleteUser(user.id).subscribe(res => {
         console.log(res);
         this.ngOnInit();
       }),
@@ -72,7 +72,7 @@ export class LiuserComponent {
   showModal(user:User): void {
     this.selectedValue = user.groupe;
     this.isVisible = true;
-    this.userid=user._id;
+    this.userid=user.id;
 
   }
 

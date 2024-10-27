@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
   AbstractControl,
   UntypedFormBuilder,
@@ -19,20 +19,58 @@ import { UserService } from 'src/app/services/user.service';
   templateUrl: './adduser.component.html',
   styleUrls: ['./adduser.component.css'],
 })
-export class AdduserComponent {
+export class AdduserComponent implements OnInit {
   selectedValue = 'Client';
   validateForm!: UntypedFormGroup;
   liUsers: User[] = [];
+  liGroupes: Groupe[] = [];
+  errorMessage: string = '';
+
+  constructor(
+    private fb: UntypedFormBuilder,
+    private groupeService: GroupeService,
+    private userService: UserService,
+    private router: Router
+  ) {}
+
+  ngOnInit(): void {
+    this.validateForm = this.fb.group({
+      name: ['', [Validators.required]],
+      lastname: ['', [Validators.required]],
+      email: ['', [
+        Validators.email, 
+        Validators.required, 
+        this.uniqueMail.bind(this)
+      ]],
+      password: ['', [Validators.required]],
+      confirm: ['', [this.confirmValidator.bind(this)]],
+      groupe: ['Client', [Validators.required]],
+    });
+
+    this.groupeService.getgroupe().subscribe((data) => {
+      this.liGroupes = data;
+    });
+
+    this.userService.getuser().subscribe((data) => {
+      this.liUsers = data;
+    });
+  }
 
   submitForm(): void {
-    this.userService.createUser(this.validateForm).subscribe({
-      next: () => {
-        this.router.navigate(['/dashboard/liuser']);
-      },
-      error: (err: HttpErrorResponse) => {
-
-      },
-    });
+    if (this.validateForm.valid) {
+      console.log('Données envoyées :', this.validateForm.value); // Log pour déboguer
+      this.userService.createUser(this.validateForm.value).subscribe({
+        next: () => {
+          this.router.navigate(['/dashboard/liuser']);
+        },
+        error: (err: HttpErrorResponse) => {
+          this.errorMessage = 'Erreur lors de la création de l’utilisateur. Veuillez réessayer.';
+          console.error('Erreur:', err);
+        },
+      });
+    } else {
+      console.error('Formulaire invalide:', this.validateForm.errors); // Log pour déboguer
+    }
   }
 
   resetForm(e: MouseEvent): void {
@@ -52,53 +90,15 @@ export class AdduserComponent {
     );
   }
 
-  confirmValidator = (
-    control: UntypedFormControl
-  ): { [s: string]: boolean } => {
+  confirmValidator(control: UntypedFormControl): { [s: string]: boolean } | null {
     if (!control.value) {
       return { error: true, required: true };
-    } else if (control.value !== this.validateForm.controls['password'].value) {
+    } else if (
+      this.validateForm &&
+      this.validateForm.controls['password'] &&
+      control.value !== this.validateForm.controls['password'].value
+    ) {
       return { confirm: true, error: true };
-    }
-    return {};
-  };
-
-  constructor(
-    private fb: UntypedFormBuilder,
-    private groupeService: GroupeService,
-    private userService: UserService,
-    private router: Router
-  ) {}
-
-  liGroupes: Groupe[] = [];
-  ngOnInit(): void {
-    this.validateForm = this.fb.group({
-      userName: ['', [Validators.required,this.uniqueName.bind(this)]],
-      name: ['', [Validators.required]],
-      lastname: ['', [Validators.required]],
-      email: ['', [Validators.email, Validators.required,this.uniqueMail.bind(this)]],
-      password: ['', [Validators.required]],
-      confirm: ['', [this.confirmValidator]],
-      groupe: ['Client', [Validators.required]],
-    });
-    this.groupeService.getgroupe().subscribe((data) => {
-      this.liGroupes = data;
-    });
-    this.userService.getuser().subscribe((data) => {
-      this.liUsers = data;
-    });
-  }
-  
-  uniqueName(control: AbstractControl): ValidationErrors | null {
-    if (this.liUsers) {
-      if (control.value != null) {
-        let user = this.liUsers.find(
-          (e) => e.id.toUpperCase() === control.value.toUpperCase()
-        );
-        if (user !== undefined) {
-          return { nameExist: true };
-        }
-      }
     }
     return null;
   }

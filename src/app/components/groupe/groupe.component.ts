@@ -25,11 +25,10 @@ export class GroupeComponent {
       this.groupeService.getper().subscribe((data) => {
         this.liper = data.permissions;
         console.log(this.liper);
-
         this.liper.forEach((e) => {
           this.checkOptionsOne.push({
             label: e.nom,
-            value: e._id,
+            value: e.id,
             checked: false,
           });
         });
@@ -49,13 +48,13 @@ export class GroupeComponent {
           if (index !== -1) {
             groupe.permissions.splice(index, 1);
           groupe.permissions.forEach((e)=>{
-            liste.push(e._id);
+            liste.push(e.id);
           })
             console.log("Élément supprimé !");
           } else {
             console.log("Élément non trouvé dans la liste.");
           }
-          this.groupeService.updateGroupe(groupe._id,liste).subscribe({
+          this.groupeService.updateGroupe(groupe.id,liste).subscribe({
             next :()=> {
 
               this.ngOnInit();
@@ -79,7 +78,7 @@ export class GroupeComponent {
           if (e.checked) {
             this.newliste.push(e.value);
           }});
-        this.groupeService.updateGroupe(groupe._id,this.newliste).subscribe(
+        this.groupeService.updateGroupe(groupe.id,this.newliste).subscribe(
           {
             next: () => {
 
@@ -148,6 +147,10 @@ export class GroupeComponent {
       this.indeterminate = true;
     }
   }
-
+  getPermissionName(permissionId: any): string {
+    const permission = this.liper.find(perm => perm.id === permissionId);
+    return permission ? permission.nom : 'Permission inconnue'; // Message par défaut si non trouvé
+  }
+  
 
 }

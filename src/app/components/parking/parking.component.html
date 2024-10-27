@@ -28,14 +28,15 @@
     (nzDeselect)="log(['deselect', stage])"
   >
   <div nz-row [nzGutter]="[16, 24]">
-    <li *ngFor="let p of stage.places">
-    <div class="cadre" [ngStyle]="{'background-color': p.etat ? 'green' : 'red'}">
-      <ul>
-        <li><span nz-icon nzType="car" nzTheme="fill" style="font-size: 100px;"></span></li>
-        <li><h2 style="margin-top: 8px;">{{stage.nom}} {{p.num}}</h2></li>
-      </ul>
-    </div>
-  </li>
+    <li *ngFor="let p of stage.places; let i = index">
+      <div class="cadre" [ngStyle]="{'background-color': p.etat ? 'red' : 'green'}">
+        <ul>
+          <li><span nz-icon nzType="car" nzTheme="fill" style="font-size: 100px;"></span></li>
+          <li><h2 style="margin-top: 8px;">{{stage.nom}} {{i + 1}}</h2></li>
+        </ul>
+      </div>
+    </li>
+    
   </div>
   </nz-tab>
 </nz-tabset>

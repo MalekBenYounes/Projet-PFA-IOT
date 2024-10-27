@@ -28,6 +28,7 @@ export class ParkingComponent {
   ngOnInit() {
     this.placeService.getDonnees().subscribe((data) => {
       this.liStages = data;
+  ;
     });
   }
 
@@ -68,7 +69,7 @@ export class ParkingComponent {
   handleOk(): void {
     console.log('Button ok clicked!');
     this.placeService
-      .updateEtage(this.liStages[this.selectedIndex]._id, this.demoValue)
+      .updateEtage(this.liStages[this.selectedIndex].id, this.demoValue)
       .subscribe((res) => {
         console.log(res);
         this.refreshPage();

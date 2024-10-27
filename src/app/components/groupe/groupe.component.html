@@ -5,23 +5,26 @@
     (nzSelectChange)="log([$event])"
   >
     <ng-container *ngFor="let groupe of liGroupes">
-      <ng-container *ngIf="groupe.nom !== 'Client'">
+      <ng-container >
         <nz-tab nzTitle="{{ groupe.nom }}">
           <h3 [ngStyle]="{ margin: '16px 0' }">Permission :</h3>
           <ul nz-list nzBordered nzSize="large">
             <li
-              nz-list-item
-              nzBordered
-              nzSize="large"
-              *ngFor="let per of groupe.permissions"
-            >
-              <ul nz-list-item-actions>
-                <nz-list-item-action>
-                  <a (click)="showDeleteConfirm(per,groupe)">Supprimer</a>
-                </nz-list-item-action>
-              </ul>
-              {{ per.nom }}
-            </li>
+            nz-list-item
+            nzBordered
+            nzSize="large"
+            *ngFor="let perId of groupe.permissions" 
+           
+          >
+            <ul nz-list-item-actions>
+              <nz-list-item-action>
+                <a (click)="showDeleteConfirm(perId, groupe)">Supprimer</a>
+              </nz-list-item-action>
+            </ul>
+            {{ getPermissionName(perId)}} 
+          </li>
+     
+          
           </ul>
           <div class="button-container">
             <div class="bn">

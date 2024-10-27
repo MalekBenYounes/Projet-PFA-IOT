@@ -1,8 +1,8 @@
 export interface Groupe {
-  _id:          string;
+  id:          string;
   nom:          string;
   permissions: PermissionElement[];
-  __v:          number;
+
 }
 
 export interface Permission {
@@ -10,7 +10,7 @@ export interface Permission {
 }
 
 export interface PermissionElement {
-  _id: string;
+  id: string;
   nom: string;
-  __v: number;
+
 }
