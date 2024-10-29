@@ -21,26 +21,29 @@ exports.createEtage = async (req, res) => {
     for (let i = 1; i <= np; i++) {
         const newPlace = {
             num: i,
-            etat :true,
+            etat: true,
             owner: et.nom 
-            
         };
 
-        // Créer un nouvel historique pour la place
+        // Enregistrer la place dans Firestore et récupérer l'ID généré
+        const placeRef = await admin.firestore().collection('Places').add(newPlace);
+
+        // Créer un nouvel historique pour la place en utilisant l'ID généré
         const now = new Date();
         const offset = now.getTimezoneOffset() * 60000; // Convertit le décalage en millisecondes
         const localDate = new Date(now.getTime() - offset);
-        
+
         const newHist = {
-            id_place: newPlace.num, // Utiliser num ou un identifiant unique pour la place
+            id_place: placeRef.id, // Utilise l'ID généré par Firestore pour la place
             update_date: localDate,
             last_state: true,
         };
 
-        // Enregistrer la place et l'historique dans Firestore
-        const placeRef = await admin.firestore().collection('Places').add(newPlace);
+        // Enregistrer l'historique dans Firestore
         await admin.firestore().collection('History').add(newHist);
-        et.places.push(placeRef.id); // Ajoute l'ID de la place créée
+
+        // Ajouter l'ID de la place créée à l'objet `et`
+        et.places.push(placeRef.id);
     }
 
     // Enregistrer l'étage dans Firestore
@@ -51,6 +54,7 @@ exports.createEtage = async (req, res) => {
         return res.status(400).json({ error });
     }
 };
+
 
 // Fonction pour obtenir tous les étages
 exports.getAllEtages = async (req, res) => {
