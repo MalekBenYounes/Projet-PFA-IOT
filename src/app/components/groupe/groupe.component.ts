@@ -37,6 +37,7 @@ export class GroupeComponent {
     });}
 
     showDeleteConfirm(per:PermissionElement,groupe:Groupe): void {
+      console.log(groupe.id)
       this.modal.confirm({
         nzTitle: 'Vous êtes sûr de vouloir supprimer cette permission ?',
         nzOkText: 'OUI',
@@ -48,7 +49,7 @@ export class GroupeComponent {
           if (index !== -1) {
             groupe.permissions.splice(index, 1);
           groupe.permissions.forEach((e)=>{
-            liste.push(e.id);
+            liste.push(e);
           })
             console.log("Élément supprimé !");
           } else {

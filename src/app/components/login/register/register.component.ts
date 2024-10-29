@@ -15,12 +15,19 @@ export class RegisterComponent {
 
 
   submitForm(): void {
-    console.log('submit', this.validateForm.value);
-    this.userService.createUser(this.validateForm).subscribe(res => {
-      console.log(res);
+    if (this.validateForm.valid) {
+      console.log('Données envoyées :', this.validateForm.value); // Log pour déboguer
+      this.userService.createUser(this.validateForm.value).subscribe({
+        next: () => {
+          this.router.navigate(['/']);
+        },
+      
       });
+    } else {
+      console.error('Formulaire invalide:', this.validateForm.errors); // Log pour déboguer
+    }
+     
 
-  this.router.navigate(['/']);
   }
 
   resetForm(e: MouseEvent): void {

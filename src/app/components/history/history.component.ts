@@ -47,41 +47,55 @@ export class HistoryComponent {
         this.liPlaces = this.liStages[i].places;
       }
     }
+    console.log(this.liPlaces)
   }
   onSelectionPlace() {
     console.log('id place', this.id_place);
-    if (this.date.length == 0) {
+    if (this.date.length === 0) {
       this.histService.gethist(this.id_place).subscribe((data) => {
         this.teste = data.hist;
         this.liHist = [];
         this.teste.forEach((e) => {
-          const dateteste = new Date(e.update_date).toISOString();
-          this.liHist.push({
-            date: dateteste.split('T')[0],
-            heure: dateteste.split('T')[1].split('.')[0],
-            etat: e.last_state,
-          });
+          if (e.update_date) { // Vérification de la validité de la date
+            const dateteste = new Date(e.update_date);
+            if (!isNaN(dateteste.getTime())) { // Vérifie si la date est valide
+              const isoString = dateteste.toISOString();
+              this.liHist.push({
+                date: isoString.split('T')[0],
+                heure: isoString.split('T')[1].split('.')[0],
+                etat: e.last_state,
+              });
+            } else {
+              console.warn(`Date invalide pour l'élément :`, e);
+            }
+          }
         });
         console.log(this.liHist);
       });
     } else {
-      this.histService
-        .gethistbydate(this.id_place, this.date)
-        .subscribe((data) => {
-          this.teste = data.hist;
-          this.liHist = [];
-          this.teste.forEach((e) => {
-            const dateteste = new Date(e.update_date).toISOString();
-            this.liHist.push({
-              date: dateteste.split('T')[0],
-              heure: dateteste.split('T')[1].split('.')[0],
-              etat: e.last_state,
-            });
-          });
-          console.log(this.liHist);
+      this.histService.gethistbydate(this.id_place, this.date).subscribe((data) => {
+        this.teste = data.hist;
+        this.liHist = [];
+        this.teste.forEach((e) => {
+          if (e.update_date) {
+            const dateteste = new Date(e.update_date);
+            if (!isNaN(dateteste.getTime())) {
+              const isoString = dateteste.toISOString();
+              this.liHist.push({
+                date: isoString.split('T')[0],
+                heure: isoString.split('T')[1].split('.')[0],
+                etat: e.last_state,
+              });
+            } else {
+              console.warn(`Date invalide pour l'élément :`, e);
+            }
+          }
         });
+        console.log(this.liHist);
+      });
     }
   }
+  
 
   onChange(result: Date[]): void {
     if (this.date.length == 0) {

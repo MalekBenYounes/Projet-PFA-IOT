@@ -53,6 +53,7 @@ export class AddgroupeComponent {
             this.isOkLoadingG = false;
           }, 1000);
           this.router.navigate(['/dashboard/groupe']);
+          window.location.reload();
         },
         error: (err: HttpErrorResponse) => {
           const errorMessage = err.error.message;
