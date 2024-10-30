@@ -51,49 +51,50 @@
     >
       <ul nz-menu [nzTheme]="theme ? 'dark' : 'light'" nzMode="inline" >
         <li
-          nz-submenu
-          nzTitle="Parking"
-          nzIcon="desktop"
+        nz-menu-item
           (click)="goToPage('parking')"
          
         >
-          <ul>
-            <li
-              nz-menu-item
-              (click)="showModal()"
+        <span nz-icon nzType="desktop" nzTheme="outline"></span>
+        <span>Parking </span>
         
-            >
-              <span nz-icon nzType="plus-circle" nzTheme="outline"></span>
-              <span>Ajouter Étage </span>
-              <nz-modal
-                [(nzVisible)]="isVisible"
-                nzTitle="Ajouter un nouvel étage"
-                (nzOnCancel)="handleCancel()"
-                (nzOnOk)="handleOk()"
-                [nzOkLoading]="isOkLoading"
-              >
-                <p *nzModalContent>
-                  Nom Étage :
-                  <input
-                    nz-input
-                    [(ngModel)]="place"
-                    (input)="convertToUpperCase()"
-                    nzSize="default"
-                    style="width: 150px; margin-right: 15px"
-                  /><br>
-                  <span class="errorMsg">{{ message }}</span>
-                  <br>
-                  Nombre de place :
-                  <nz-input-number
-                    [nzMin]="10"
-                    [nzMax]="100"
-                    [nzStep]="1"
-                    [(ngModel)]="np"
-                  ></nz-input-number>
-                </p>
-              </nz-modal>
-            </li>
-          </ul>
+        </li>
+        
+          <li
+          nz-menu-item
+          (click)="showModal()"
+    
+        >
+          <span nz-icon nzType="plus-circle" nzTheme="outline"></span>
+          <span>Ajouter Étage </span>
+          <nz-modal
+            [(nzVisible)]="isVisible"
+            nzTitle="Ajouter un nouvel étage"
+            (nzOnCancel)="handleCancel()"
+            (nzOnOk)="handleOk()"
+            [nzOkLoading]="isOkLoading"
+          >
+            <p *nzModalContent>
+              Nom Étage :
+              <input
+                nz-input
+                [(ngModel)]="place"
+                (input)="convertToUpperCase()"
+                nzSize="default"
+                style="width: 150px; margin-right: 15px"
+              /><br>
+              <span class="errorMsg">{{ message }}</span>
+              <br>
+              Nombre de place :
+              <nz-input-number
+                [nzMin]="10"
+                [nzMax]="100"
+                [nzStep]="1"
+                [(ngModel)]="np"
+              ></nz-input-number>
+            </p>
+          </nz-modal>
+        
         </li>
 
         <li

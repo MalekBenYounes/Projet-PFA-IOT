@@ -62,11 +62,11 @@ const routes: Routes = [
       { path: 'history', component: HistoryComponent ,canActivate: [AccesGuard]},
       { path: 'adduser', component: AdduserComponent ,canActivate: [AccesGuard]},
       { path: 'liuser', component: LiuserComponent ,canActivate: [AccesGuard]},
-      { path: 'parametre', component: ParametreComponent},
+      { path: 'parametre', component: ParametreComponent,canActivate: [AccesGuard]},
       
       { path: 'stat', component: StatComponent,canActivate: [AccesGuard] },
       { path: 'groupe', component: GroupeComponent,canActivate: [AccesGuard] },
-      { path: 'client', component: ClientComponent},
+      { path: 'client', component: ClientComponent,},
     ],
   },
 ];

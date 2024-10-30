@@ -81,10 +81,12 @@ export class GroupeComponent {
           }});
         this.groupeService.updateGroupe(groupe.id,this.newliste).subscribe(
           {
-            next: () => {
-
+            next: (res) => {
+              
               this.ngOnInit();
               this.isVisible = false;
+              console.log(res);
+              // window.location.reload();
 
             },
             error: (err: HttpErrorResponse) => {
