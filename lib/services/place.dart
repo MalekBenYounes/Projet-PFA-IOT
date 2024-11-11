@@ -18,15 +18,15 @@ class EtageService {
   }
 
   // Récupérer la liste des places 
- static Future<List<Place>> fetchPlaces() async {
-  var response = await http.get(Uri.parse('http://localhost:3000/api/places'));
+ static Future<Place> fetchPlaces(String id) async {
+  var response = await http.get(Uri.parse('http://localhost:3000/api/places/$id'));
 
   if (response.statusCode == 200) {
     print("Connexion réussie ! Places récupérées");
     // Utilisation de placeListFromJson pour récupérer la liste d'objets Place
-    final placeList = placeListFromJson(response.body);
-    print(placeList);
-    return placeList;
+    final place = placeFromJson(response.body);
+    print(place);
+    return place;
   } else {
     throw Exception('Échec de la récupération des places');
   }

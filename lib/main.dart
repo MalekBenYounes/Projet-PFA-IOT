@@ -288,47 +288,61 @@ class _MyHomePageState extends State<MyHomePage> {
                       ],
                     ),
                     // Place Grid
-                    Expanded(
-                      child: GridView.builder(
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 7,
-                        ),
-                        itemCount: etages[selecteditem].places.length,
-                        itemBuilder: (context, index) {
-                          final p = etages[selecteditem].places[index];
-
-                         return InkWell(
-  onTap: () async {
-    await EtageService.updatePlace(p);
-    await fetchPlacesMethod();
-  },
-  child: Center(
-    child: Card(
-      // color: p ? Colors.green : Colors.red,
-      child: Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const Expanded(
-              child: Icon(Icons.time_to_leave, size: 60),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                '${index+1} - ${etages[selecteditem].nom}',
-                style: const TextStyle(fontSize: 30),
-              ),
-            ),
-          ],
-        ),
-      ),
+                 Expanded(
+  child: GridView.builder(
+    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+      crossAxisCount: 7,
     ),
-  ),
-);
+    itemCount: etages[selecteditem].places.length,
+    itemBuilder: (context, index) {
+      final p = etages[selecteditem].places[index];
 
-                    },
+      return FutureBuilder<Place>(
+        future: EtageService.fetchPlaces(p), // Appel API pour récupérer l'objet Place
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const CircularProgressIndicator(); // Indicateur de chargement
+          } else if (snapshot.hasError) {
+            return Text('Erreur: ${snapshot.error}');
+          } else if (snapshot.hasData) {
+            final Place place = snapshot.data!;
+            return InkWell(
+              onTap: () async {
+                await EtageService.updatePlace(p); // Utiliser l'ID pour mise à jour
+                await fetchPlacesMethod();
+              },
+              child: Center(
+                child: Card(
+                  color: place.place.etat ? Colors.green : Colors.red, // Couleur selon état
+                  child: Center(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const Expanded(
+                          child: Icon(Icons.time_to_leave, size: 60),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Text(
+                            '${index + 1} - ${etages[selecteditem].nom}',
+                            style: const TextStyle(fontSize: 30),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                )
+                ),
+              ),
+            );
+          } else {
+            return const Text('Pas de données disponibles');
+          }
+        },
+      );
+    },
+  ),
+)
+
               ],
             ),
     );
