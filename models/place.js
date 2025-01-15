@@ -85,6 +85,15 @@ const Place = {
         });
         await batch.commit();
         console.log(`Places supprimées pour le propriétaire ${owner}.`);
+    },
+
+    // Fonction pour obtenir l'état d'une place
+    getState: async (id) => {
+        const doc = await db.collection('Places').doc(id).get();
+        if (!doc.exists) {
+            throw new Error('Place non trouvée');
+        }
+        return doc.data().etat; // Retourne l'état de la place (true ou false)
     }
 };
 

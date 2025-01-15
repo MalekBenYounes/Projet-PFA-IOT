@@ -21,6 +21,15 @@ const PlaceController = {
             return res.status(400).json({ error: error.message });
         }
     },
+    getstatePlace: async (req, res) => {
+        const id = req.params.id;
+        try {
+            const state = await Place.getState(id);
+            return res.status(200).json({ state });
+        } catch (error) {
+            return res.status(400).json({ error: error.message });
+        }
+    },
 
     getAllPlaces: async (req, res) => {
         try {
