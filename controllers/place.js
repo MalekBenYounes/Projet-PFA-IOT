@@ -1,4 +1,3 @@
-// controllers/placeController.js
 const Place = require("../models/place");
 
 const PlaceController = {
@@ -21,6 +20,7 @@ const PlaceController = {
             return res.status(400).json({ error: error.message });
         }
     },
+
     getstatePlace: async (req, res) => {
         const id = req.params.id;
         try {
@@ -68,6 +68,27 @@ const PlaceController = {
             res.send(`Place avec l'ID ${id} supprimée.`);
         } catch (error) {
             res.status(400).send(error.message);
+        }
+    },
+
+    // Nouvelle méthode pour obtenir le nombre de places vides et occupées
+    getPlaceCount: async (req, res) => {
+        try {
+            const places = await Place.getAll();
+            let emptyCount = 0;
+            let occupiedCount = 0;
+
+            places.forEach(place => {
+                if (place.state === true) { // true pour place vide
+                    emptyCount++;
+                } else if (place.state === false) { // false pour place occupée
+                    occupiedCount++;
+                }
+            });
+
+            return res.status(200).json({ emptyCount, occupiedCount });
+        } catch (error) {
+            return res.status(400).json({ error: error.message });
         }
     }
 };
