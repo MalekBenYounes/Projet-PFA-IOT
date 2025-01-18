@@ -35,4 +35,9 @@ export class PlaceService {
   public getPlaces(): Observable<Places> {
     return this.http.get<Places>(`${this.baseUrl}/places/`);
   }
+  public getOnePlace(id : any): Observable<Places> {
+    console.log(id);
+    
+    return this.http.get<Places>(`${this.baseUrl}/places/state/${id}`);
+  }
 }

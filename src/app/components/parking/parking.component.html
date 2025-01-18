@@ -1,46 +1,33 @@
-
-
-  <div class="iconn">
-  <span nz-icon nzType="delete" nzTheme="outline" style="margin-right: 20px" (click)="showDeleteConfirm()"></span>
-  <span nz-icon nzType="edit" nzTheme="outline" (click)="showModal()"></span>
-</div>
-<nz-modal [(nzVisible)]="isVisible" nzTitle="Modifier nombre de place de l'étage : " (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()">
-  <ng-container *nzModalContent>
-    <p>Etage : {{this.liStages[this.selectedIndex].nom}}</p>
-
-    <nz-input-number [(ngModel)]="demoValue" [nzMin]="1" [nzMax]="100" [nzStep]="1"></nz-input-number>
-
-  </ng-container>
-</nz-modal>
 <nz-tabset
-
   [nzTabPosition]="nzTabPosition"
   [(nzSelectedIndex)]="selectedIndex"
   (nzSelectChange)="log([$event])"
 >
   <nz-tab
-  *ngFor="let stage of liStages"
-    [nzTitle]="'Etage '+stage.nom"
-
-    (nzSelect)="log(['select', stage])"
-    (nzClick)="log(['click', stage])"
-    (nzContextmenu)="log(['contextmenu', stage])"
-    (nzDeselect)="log(['deselect', stage])"
+    *ngFor="let stage of liStages"
+    [nzTitle]="'Etage ' + stage.nom"
   >
-  <div nz-row [nzGutter]="[16, 24]">
-    <li *ngFor="let p of stage.places; let i = index">
-      <div class="cadre" [ngStyle]="{'background-color': p.etat ? 'red' : 'green'}">
-        <ul>
-          <li><span nz-icon nzType="car" nzTheme="fill" style="font-size: 100px;"></span></li>
-          <li><h2 style="margin-top: 8px;">{{stage.nom}} {{i + 1}}</h2></li>
-        </ul>
-      </div>
-    </li>
-    
-  </div>
+    <div nz-row [nzGutter]="[16, 24]">
+      <li *ngFor="let p of stage.places; let i = index">
+        <div
+          class="cadre"
+          [ngStyle]="{'background-color': getBackgroundColor(p)}"
+        >
+          <ul>
+            <li>
+              <span
+                nz-icon
+                nzType="car"
+                nzTheme="fill"
+                style="font-size: 100px;"
+              ></span>
+            </li>
+            <li>
+              <h2 style="margin-top: 8px;">{{ stage.nom }} {{ i + 1 }}</h2>
+            </li>
+          </ul>
+        </div>
+      </li>
+    </div>
   </nz-tab>
 </nz-tabset>
-<!-- <li nz-menu-item *ngFor="let stage of liStages" (click)="goToParking('parking',stage)">Étage {{ stage.nom }}</li> -->
-
-
-

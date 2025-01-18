@@ -1,6 +1,5 @@
 import { Component, Input } from '@angular/core';
 import { Etage, Place } from 'src/app/models/etage';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { PlaceService } from 'src/app/services/place.service';
 import { NzTabPosition } from 'ng-zorro-antd/tabs';
 import { NzModalService } from 'ng-zorro-antd/modal';
@@ -26,11 +25,29 @@ export class ParkingComponent {
   }
 
   ngOnInit() {
+    
     this.placeService.getDonnees().subscribe((data) => {
       this.liStages = data;
+      console.log(this.liStages[0].places);
+      
+  ;
+    });
+    this.placeService.getPlaces().subscribe((data) => {
+      this.liplaces= data.places;
+      console.log(this.liplaces);
+      
   ;
     });
   }
+
+  getBackgroundColor(id : any): String {
+   
+    const place = this.liplaces.find(place => place.id === id);
+    let s = place?.etat
+    return  s? 'green': 'red' ;
+  }
+
+
 
   nzTabPosition: NzTabPosition = 'top';
   selectedIndex = 0;
