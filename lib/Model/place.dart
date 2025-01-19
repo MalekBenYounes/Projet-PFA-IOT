@@ -3,7 +3,9 @@
 //     final place = placeFromJson(jsonString);
 
 import 'dart:convert';
+List<Place> PlaceFromJson(String str) => List<Place>.from(json.decode(str).map((x) => Place.fromJson(x)));
 
+String PlaceToJson(List<Place> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 Place placeFromJson(String str) => Place.fromJson(json.decode(str));
 
 String placeToJson(Place data) => json.encode(data.toJson());

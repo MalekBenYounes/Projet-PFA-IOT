@@ -1,30 +1,70 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'LoginPage.dart';
 import 'ReservationPage.dart';
+import '../../services/place.dart'; 
+import '../../Model/place.dart';
 
-class HomePage extends StatelessWidget {
-  
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  int availablePlaces = 0; // Compteur des places disponibles
+  int occupiedPlaces = 0;  // Compteur des places occupées
+  bool isLoading = false;
+  List<Place> places =[];
+  @override
+  void initState() {
+    super.initState();
+    fetchPlaces(); // Charger les places dès le démarrage
+  }
+
+ void fetchPlaces() async {
+  if (isLoading) return;  // Ne lance pas une nouvelle requête si déjà en cours
+  setState(() {
+    isLoading = true;
+  });
+
+  try {
+    // Récupérer le nombre de places vides et occupées
+    final emptyCount = await EtageService.getPlaceCountEmty();
+    final occupiedCount = await EtageService.getPlaceCountOcup();
+
+    setState(() {
+      availablePlaces = 7; 
+      occupiedPlaces = 3; 
+      isLoading = false;
+    });
+  } catch (e) {
+    setState(() {
+      isLoading = false;
+    });
+  }
+}
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: Color(0xFF1A3C97), // Fond blanc pour l'AppBar
-        elevation: 0, // Supprime l'ombre de l'AppBar
-        toolbarHeight: 80, // Ajuste la hauteur de l'AppBar
+        backgroundColor: Color(0xFF1A3C97),
+        elevation: 0,
+        toolbarHeight: 80,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Image à gauche
             Image.asset(
-              "assets/images/preepark.png", // Remplacez par le chemin réel de l'image
+              "assets/images/preepark.png",
               width: 150,
             ),
-            // Nom et icône de logout à droite
             Row(
               children: [
                 Text(
-                  "Nom",
+                  "Malek",
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -35,7 +75,6 @@ class HomePage extends StatelessWidget {
                 IconButton(
                   icon: Icon(Icons.logout, color: Colors.white),
                   onPressed: () {
-                    // Redirige vers la page LoginPage
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(builder: (context) => LoginPage()),
@@ -49,20 +88,17 @@ class HomePage extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          // Image de fond
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage("assets/images/parking.jpg"), // Image de fond
+                image: AssetImage("assets/images/parking.jpg"),
                 fit: BoxFit.cover,
               ),
             ),
           ),
-          // Superposition blanche semi-transparente
           Container(
             color: Colors.white.withOpacity(0),
           ),
-          // Contenu principal
           Center(
             child: Container(
               padding: const EdgeInsets.all(16.0),
@@ -73,8 +109,7 @@ class HomePage extends StatelessWidget {
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.green,
-                      borderRadius:
-                          BorderRadius.circular(10), // Radius des coins
+                      borderRadius: BorderRadius.circular(10),
                     ),
                     padding: EdgeInsets.all(16),
                     child: Row(
@@ -86,7 +121,7 @@ class HomePage extends StatelessWidget {
                           color: Colors.white,
                         ),
                         Text(
-                          "8",
+                          "6", 
                           style: TextStyle(
                             fontSize: 40,
                             fontWeight: FontWeight.bold,
@@ -96,13 +131,12 @@ class HomePage extends StatelessWidget {
                       ],
                     ),
                   ),
-                  SizedBox(height: 20), // Espacement entre les blocs
+                  SizedBox(height: 20),
                   // Bloc rouge
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.red,
-                      borderRadius:
-                          BorderRadius.circular(10), // Radius des coins
+                      borderRadius: BorderRadius.circular(10),
                     ),
                     padding: EdgeInsets.all(16),
                     child: Row(
@@ -127,7 +161,7 @@ class HomePage extends StatelessWidget {
                           ],
                         ),
                         Text(
-                          "19",
+                          "4", 
                           style: TextStyle(
                             fontSize: 40,
                             fontWeight: FontWeight.bold,
@@ -138,7 +172,6 @@ class HomePage extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 20),
-                  //button de reservation
                   ElevatedButton(
                     onPressed: () {
                       Navigator.pushReplacement(
@@ -146,32 +179,27 @@ class HomePage extends StatelessWidget {
                         MaterialPageRoute(
                             builder: (context) => ReservationPage()),
                       );
-                      // Action à exécuter lors du clic sur le bouton
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          Color.fromARGB(177, 26, 59, 151), // Couleur de fond
+                      backgroundColor: Color.fromARGB(177, 26, 59, 151),
                       shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(10), // Radius des coins
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      padding: EdgeInsets.all(16), // Espacement interne
+                      padding: EdgeInsets.all(16),
                     ),
                     child: Row(
-                      mainAxisSize: MainAxisSize.min, // Ne pas étirer le bouton
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
                           Icons.check_circle,
                           size: 50,
                           color: Colors.white,
                         ),
-                        SizedBox(
-                            width: 10), // Espacement entre l'icône et le texte
+                        SizedBox(width: 10),
                         Text(
                           "Réserver",
                           style: TextStyle(
-                            fontSize:
-                                20, // Ajustez la taille du texte si nécessaire
+                            fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),

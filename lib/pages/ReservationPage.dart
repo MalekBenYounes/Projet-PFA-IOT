@@ -81,7 +81,7 @@ class _ReservationPageState extends State<ReservationPage> {
             Row(
               children: [
                 const Text(
-                  "Nom ",
+                  "Malek ",
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,

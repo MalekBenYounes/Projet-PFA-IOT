@@ -40,9 +40,33 @@ class _PaymentPageState extends State<PaymentPage> {
 
   @override
   void dispose() {
-    _timer
-        .cancel(); // Assurez-vous de nettoyer le timer pour éviter les fuites de mémoire
+    _timer.cancel(); // Assurez-vous de nettoyer le timer pour éviter les fuites de mémoire
     super.dispose();
+  }
+
+  // Fonction pour afficher le pop-up après paiement
+  void _showPaymentSuccessDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Paiement effectué avec succès"),
+          content: Text("Votre code d'accès au parking est : 1548"),
+          actions: <Widget>[
+            TextButton(
+              child: Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => HomePage()),
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -154,8 +178,7 @@ class _PaymentPageState extends State<PaymentPage> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  print("Paiement effectué !");
-                  MaterialPageRoute(builder: (context) => HomePage());
+                  _showPaymentSuccessDialog(context); // Affiche le pop-up
                 },
                 child: Text("Paiement"),
                 style: ElevatedButton.styleFrom(

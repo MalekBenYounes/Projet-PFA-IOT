@@ -10,6 +10,7 @@ class EtageService {
     var response = await http.get(Uri.parse('http://10.0.2.2:3000/api/etages'));
     print("reponse : ");
     print(response.statusCode);
+    
     if (response.statusCode == 200) {
       print("Connexion réussie ! Etages récupérés");
       print(response.body);
@@ -20,37 +21,30 @@ class EtageService {
     }
   }
 
-  
-  // Fonction pour récupérer le nombre de places vides et occupées
- static Future<Map<String, int>?> getPlaceCounts() async {
-    try {
-      // Appel à l'API ou à la source de données
-      final response = await http.get(Uri.parse('VOTRE_API_URL'));
+  static Future<int> getPlaceCountEmty() async {
+    final response = await http.get(Uri.parse('http://10.0.2.2:3000/api/places/empty'));
 
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> data = json.decode(response.body);
-
-        // Vérifiez si les clés existent dans la réponse
-        if (data != null && data.containsKey('emptyCount') && data.containsKey('occupiedCount')) {
-          return {
-            'emptyCount': data['emptyCount'] as int,
-            'occupiedCount': data['occupiedCount'] as int,
-          };
-        } else {
-          throw Exception('Données manquantes dans la réponse');
-        }
-      } else {
-        throw Exception('Erreur lors de la récupération des données');
-      }
-    } catch (e) {
-      throw Exception('Erreur lors de la récupération des places : $e');
+    if (response.statusCode == 200) {
+      // Si la requête est réussie, on décode la réponse JSON
+      final data = json.decode(response.body);
+      return data['emptyCount']; // Récupérer le nombre de places vides
+    } else {
+      throw Exception('Failed to load empty places count');
     }
   }
 
 
+  static Future<int> getPlaceCountOcup() async {
+    final response = await http.get(Uri.parse('http://10.0.2.2:3000/api/places/occupied'));
 
-
-
+    if (response.statusCode == 200) {
+      // Si la requête est réussie, on décode la réponse JSON
+      final data = json.decode(response.body);
+      return data['occupiedCount']; // Récupérer le nombre de places occupées
+    } else {
+      throw Exception('Failed to load occupied places count');
+    }
+  }
 
   // Récupérer une place
   static Future<Place> fetchPlaces(String id) async {
