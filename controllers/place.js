@@ -72,21 +72,36 @@ const PlaceController = {
     },
 
     // Nouvelle méthode pour obtenir le nombre de places vides et occupées
-    getPlaceCount: async (req, res) => {
+    getPlaceCountEmty: async (req, res) => {
+        console.log('a333333333333');
         try {
             const places = await Place.getAll();
             let emptyCount = 0;
+            
+            places.forEach(place => {
+                if (place.etat === true) { 
+                    emptyCount++;
+                } 
+            });
+
+            return res.status(200).json({ emptyCount });
+        } catch (error) {
+            return res.status(400).json({ error: error.message });
+        }
+    },
+    getPlaceCountOcup: async (req, res) => {
+        try {
+            const places = await Place.getAll();
+            
             let occupiedCount = 0;
 
             places.forEach(place => {
-                if (place.state === true) { // true pour place vide
-                    emptyCount++;
-                } else if (place.state === false) { // false pour place occupée
+                if (place.etat === false) { 
                     occupiedCount++;
                 }
             });
 
-            return res.status(200).json({ emptyCount, occupiedCount });
+            return res.status(200).json({occupiedCount });
         } catch (error) {
             return res.status(400).json({ error: error.message });
         }

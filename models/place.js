@@ -94,7 +94,54 @@ const Place = {
             throw new Error('Place non trouvée');
         }
         return doc.data().etat; // Retourne l'état de la place (true ou false)
+    },
+    getPlaceCountEmty: async (req, res) => {
+        try {
+            const places = await Place.getAll();
+            console.log("Places récupérées : ", places); // Affiche toutes les places récupérées
+    
+            let emptyCount = 0;
+    
+            places.forEach(place => {
+                console.log("État de la place (empty) : ", place.etat); // Affiche l'état de chaque place
+                if (place.etat === true) {  // Vérifie si l'état est "true"
+                    emptyCount++;
+                }
+            });
+    
+            console.log("Nombre de places vides : ", emptyCount); // Affiche le nombre de places vides
+    
+            return res.status(200).json({ emptyCount });
+        } catch (error) {
+            console.error("Erreur dans getPlaceCountEmty : ", error); // Affiche l'erreur
+            return res.status(400).json({ error: error.message });
+        }
+    },
+    
+    getPlaceCountOcup: async (req, res) => {
+        try {
+            const places = await Place.getAll();
+            console.log("Places récupérées : ", places); // Affiche toutes les places récupérées
+            
+            let occupiedCount = 0;
+    
+            places.forEach(place => {
+                console.log("État de la place (occupied) : ", place.etat); // Affiche l'état de chaque place
+                if (place.etat === false) {  // Vérifie si l'état est "false"
+                    occupiedCount++;
+                }
+            });
+    
+            console.log("Nombre de places occupées : ", occupiedCount); // Affiche le nombre de places occupées
+    
+            return res.status(200).json({ occupiedCount });
+        } catch (error) {
+            console.error("Erreur dans getPlaceCountOcup : ", error); // Affiche l'erreur
+            return res.status(400).json({ error: error.message });
+        }
     }
+    
+    
 };
 
 module.exports = Place;
