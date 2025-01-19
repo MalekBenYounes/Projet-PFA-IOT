@@ -4,6 +4,7 @@ import { PlaceService } from 'src/app/services/place.service';
 import { NzTabPosition } from 'ng-zorro-antd/tabs';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import * as socketIO from 'socket.io-client';
+
 @Component({
   selector: 'app-parking',
   templateUrl: './parking.component.html',
@@ -22,39 +23,35 @@ export class ParkingComponent {
     socket.on('update', (data) => {
       this.ngOnInit();
     });
+
+    // Déclenche ngOnInit toutes les 5 secondes
+    setInterval(() => {
+      this.ngOnInit();
+    }, 5000); // 5000 ms = 5 secondes
   }
 
   ngOnInit() {
-    
     this.placeService.getDonnees().subscribe((data) => {
       this.liStages = data;
       console.log(this.liStages[0].places);
-      
-  ;
     });
     this.placeService.getPlaces().subscribe((data) => {
-      this.liplaces= data.places;
+      this.liplaces = data.places;
       console.log(this.liplaces);
-      
-  ;
     });
   }
 
-  getBackgroundColor(id : any): String {
-   
+  getBackgroundColor(id: any): string {
     const place = this.liplaces.find(place => place.id === id);
-    let s = place?.etat
-    return  s? 'green': 'red' ;
+    let s = place?.etat;
+    return s ? 'green' : 'red';
   }
-
-
 
   nzTabPosition: NzTabPosition = 'top';
   selectedIndex = 0;
 
   demoValue = 0;
 
-  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   log(args: any[]): void {
     console.log(args);
   }
@@ -77,6 +74,7 @@ export class ParkingComponent {
       nzOnCancel: () => console.log('NON'),
     });
   }
+
   isVisible = false;
   showModal(): void {
     this.isVisible = true;
@@ -98,6 +96,7 @@ export class ParkingComponent {
     console.log('Button cancel clicked!');
     this.isVisible = false;
   }
+
   refreshPage() {
     this.ngOnInit();
   }

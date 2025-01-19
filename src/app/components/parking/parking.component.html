@@ -1,3 +1,15 @@
+<div class="iconn">
+<span nz-icon nzType="delete" nzTheme="outline" style="margin-right: 20px" (click)="showDeleteConfirm()"></span>
+<span nz-icon nzType="edit" nzTheme="outline" (click)="showModal()"></span>
+</div>
+<nz-modal [(nzVisible)]="isVisible" nzTitle="Modifier nombre de place de l'étage : " (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()">
+<ng-container *nzModalContent>
+  <p>Etage : {{this.liStages[this.selectedIndex].nom}}</p>
+
+  <nz-input-number [(ngModel)]="demoValue" [nzMin]="1" [nzMax]="100" [nzStep]="1"></nz-input-number>
+
+</ng-container>
+</nz-modal>
 <nz-tabset
   [nzTabPosition]="nzTabPosition"
   [(nzSelectedIndex)]="selectedIndex"

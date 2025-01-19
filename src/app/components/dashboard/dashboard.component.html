@@ -6,7 +6,7 @@
       nzMode="horizontal"
       class="header-menu"
     >
-      <!-- <div class="logo"><img src="../../../assets/images/preeparkDash.png" style="width:200px" /></div> -->
+      <div class="logo"><img src="../../../assets/images/preeparkDash.png" style="width:200px" /></div>
       <div class="cadre">
         <nz-avatar nzText="{{ user.prenom[0].toUpperCase() }}"></nz-avatar
         ><span>{{ user.prenom.toUpperCase() }}</span>
@@ -43,10 +43,11 @@
     </ul>
   </nz-header>
 
-  <nz-layout>
+  <nz-layout >
     <nz-sider
       nzWidth="200px"
       [nzTheme]="theme ? 'dark' : 'light'"
+      *ngIf="user.prenom.toUpperCase() !== 'MED AZIZ'"
      
     >
       <ul nz-menu [nzTheme]="theme ? 'dark' : 'light'" nzMode="inline" >
@@ -155,7 +156,7 @@
        
       </ul>
       <div class ="container">
-        <!-- <img src="../../../assets/images/prisma.svg" class="prisma" /> -->
+       
             </div>
     </nz-sider>
     <nz-layout>
